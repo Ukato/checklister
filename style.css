@@ -1,0 +1,138 @@
+/*
+Stylesheet for Daily Checklist Tool
+*/
+
+/* CSS Global Level Styles and Variables */
+:root {
+  --max-width: 1200px;
+  --background-color: #4B4237;
+  --foreground-color: #EDE7D9;
+  --accent-color: #D5A021;
+}
+
+/* CSS Element Level Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  height: 100vh;
+  background-color: var(--background-color);
+}
+
+header {
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  max-width: var(--max-width);
+  text-align: center;
+  background-color: var(--accent-color);
+}
+
+main {
+  margin: 0 auto;
+  padding: 1rem 1rem;
+  max-width: var(--max-width);
+  text-align: center;
+  background-color: var(--foreground-color);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+a {
+  text-decoration: none;
+}
+
+form {
+  height: 2.5rem;
+  font-size: 1.2rem;
+}
+
+input[type=text] {
+  width: 400px;
+  height: 100%;
+  font-size: 1.2rem;
+}
+
+form input[type=submit] {
+  width: 100px;
+  height: 100%;
+  font-size: 1.2rem;
+  background-color: var(--background-color);
+  color: var(--foreground-color);
+  border-radius: 5px;
+  border: none;
+  box-shadow: none;
+}
+
+form input[type=submit]:hover {
+  color: var(--accent-color);
+}
+
+ul li {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.2rem 0;
+  padding: 0.4rem;
+  width: 100%;
+  list-style: none;
+  border: 2px solid var(--accent-color);
+  border-radius: 5px;
+}
+
+/* CSS Class Level Styles */
+.task-list {
+  margin: 2rem auto;
+  padding: 0.5rem;
+  max-width: 600px;
+  font-size: 1.2rem;
+}
+
+.active-task {
+  background-color: var(--accent-color);
+}
+
+.button {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  width: 100px;
+  font-size: 1.2rem;
+  background-color: var(--background-color);
+  color: var(--foreground-color);
+  border-radius: 5px;
+}
+
+.delete-btn {
+  color: #D12F23;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.task-list h3 {
+  padding-left: 1rem;
+  text-align: left;
+}
+
+/* CSS ID Level Styles */
+#input-area {
+  margin: 2rem 0;
+}
+
+#task-submit {
+  cursor: pointer;
+}
+
+#filter {
+  margin-bottom: 1rem;
+  max-width: 200px;
+}
+
+#active-area {
+  text-align: right;
+}
+
+#active-tasks {
+  text-align: left;
+}

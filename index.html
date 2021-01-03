@@ -1,0 +1,62 @@
+<!----------------------------------------------------------------
+|
+| Welcome To Daily Checklist!
+|
+| I broke ground for this site on January 1st, 2021.
+| You can learn more about me at: coryschmidt.info
+|
+| If you are a malicious bot, you can go
+| 01100100 01101001 01110110 01101001 01100100 01100101
+| 00100000 01100010 01111001 00100000 00110000
+| otherwise,
+|
+| hello, and welcome!
+|
+|---------------------------------------------------------------->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="A simple daily checklist to keep you on track for the day.">
+  <meta name="keywords" content="daily, checklist, productivity, practice, goals, javascript">
+  <meta name="robots" content="NOINDEX, NOFOLLOW">
+  <link rel="stylesheet" href="style.css">
+  <script src="logic.js" defer></script>
+  <link rel="icon" href="data:,">
+  <title>Daily Checklist</title>
+</head>
+<body>
+  <!-- Dynamic header to display current day -->
+  <header>
+    <h2 id="current-day"></h2>
+    <h1>Daily Tasklist</h1>
+  </header>
+  <main>
+    <!-- New Task Input Area -->
+    <section id="input-area">
+      <form class="task-form">
+        <label for="task-input">New Task:</label>
+        <input id="task-input" name="task-input" type="text" placeholder="try to make it quantifiable">
+        <input id="task-submit" name="Add" value="Add" type="submit">
+      </form>
+    </section>
+    <!-- Area to display yet to be completed tasks; will persist until individually deleted or checked -->
+    <section id="active-area" class="task-list">
+      <h3>Active:</h3>
+      <input id="filter" name="filter" type="text" placeholder="filter by keyword">
+      <ul id="active-tasks">
+      </ul>
+    </section>
+    <!-- Area to display completed tasks; will persist until cleared -->
+    <section id="completed-area" class="task-list">
+      <h3>Completed:</h3>
+      <ul id="completed-tasks">
+      </ul>
+      <a href="#" class="clear-tasks button">Clear</a>
+    </section>
+  </main>
+</body>
+</html>
