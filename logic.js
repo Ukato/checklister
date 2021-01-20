@@ -1,216 +1,370 @@
 // declare UI Variables
-const currentDay = document.querySelector('#current-day');
-currentDay.innerHTML = new Date().toLocaleDateString();
-const taskForm = document.querySelector('.task-form');
+const currentDate = document.querySelector('#current-date');
+const currentTime = document.querySelector('#current-time');
+const clockIcon = document.querySelector('#header-clock');
+const inputArea = document.querySelector('#input-area');
 const taskInput = document.querySelector('#task-input');
-const taskSubmit = document.querySelector('#task-submit');
-const taskFilter = document.querySelector('#filter');
-const tasksActive = document.querySelector('#active-tasks');
-const tasksCompleted = document.querySelector('#completed-tasks');
-const tasksClear = document.querySelector('.clear-tasks');
+const taskInputLabel = document.querySelector('[for=task-input]');
+const unfoldSelect = document.querySelector('#unfold-select');
+const highPriority = document.querySelector('#highp-btn');
+const mediumPriority = document.querySelector('#mediump-btn');
+const lowPriority = document.querySelector('#lowp-btn');
+const priorityLevelLabel = document.querySelector('[for=priority-level]');
+const ttlLabel = document.querySelector('[for=ttl]');
+const ttl = document.querySelector('#ttl');
+const ttlLeft = document.querySelector('#ttl-left');
+const ttlRight = document.querySelector('#ttl-right');
+const addArrow = document.querySelector('#add-arrow');
+const itemList = document.querySelector('#active-tasks');
 
-// load all event listeners
+// load all Event Listeners
 loadEventListeners();
 
 function loadEventListeners() {
-
-  //DOM Load event
-  document.addEventListener('DOMContentLoaded', getTasks);
-
-  //add task submit event
-  taskForm.addEventListener('submit', addTask);
-
-  // remove selected task from active tasks
-  tasksActive.addEventListener('click', removeTask);
-
-  // Clear completed tasks 
-  tasksClear.addEventListener('click', clearCompleted);
-
-  // Filter tasks event
-  taskFilter.addEventListener('keyup', filterTasks);
-}
-
-function getTasks() {
-
-  let tasks;
-
-  // check to see if there are any locally stored tasks
-  if(localStorage.getItem('tasks') !== null) {
-
-    // pull them out if there are any
-    tasks = JSON.parse(localStorage.getItem('tasks'));
-
-    tasks.forEach(function(task) {
-
-      // create li element
-      const li = document.createElement('li');
-
-      // add class
-      li.className = 'active-task';
-
-      // create checkbox and append to li
-      // const checkBox = document.createElement('input');
-      // checkBox.type = 'checkbox';
-      // li.appendChild(checkBox);
-
-      // create text node and append to li
-      li.appendChild(document.createTextNode(task));
-
-      // create new link element
-      const link = document.createElement('a');
-      link.className = 'delete-btn';
-      link.innerHTML = 'remove';
-
-      // append link to li inner html
-      li.appendChild(link);
-
-      // append li to the ul
-      tasksActive.appendChild(li);
-
-    })
-
-  }
-}
-
-function addTask(e) {
-  if(taskInput.value === '') {
-
-    alert('You haven\'t typed anything. Describe your task to add it to the list.');
-
-  } else {
-
-    // create li element
-    const li = document.createElement('li');
-
-    // add class
-    li.className = 'active-task';
-
-    // create checkbox and append to li
-    // const checkBox = document.createElement('input');
-    // checkBox.type = 'checkbox';
-    // li.appendChild(checkBox);
-
-    // create text node and append to li
-    li.appendChild(document.createTextNode(taskInput.value));
-
-    // create new link element
-    const link = document.createElement('a');
-    link.className = 'delete-btn';
-    link.innerHTML = 'remove';
-
-    // append link to li inner html
-    li.appendChild(link);
-
-    // append li to the ul
-    tasksActive.appendChild(li);
-
-    // Store in local storage
-    storeTaskLocally(taskInput.value);
-
-    // clear input
-    taskInput.value = '';
-  }
-
-  e.preventDefault();
-}
-
-function storeTaskLocally(task) {
-
-  // create tasks array;
-  let tasks;
-
-  // check to see if any tasks are stored locally
-  if(localStorage.getItem('tasks') === null) {
-
-    tasks = [];
-
-  } else {
-
-    tasks = JSON.parse(localStorage.getItem('tasks'));
-
-  }
-
-  // add inputted task to the tasks array
-  tasks.push(task);
-
-  // store array back into local storage
-  localStorage.setItem('tasks', JSON.stringify(tasks));
-}
-
-// Remove selected task
-function removeTask(e) {
-  if(e.target.classList.contains('delete-btn')) {
-    if(confirm('Are you sure?')) {
-      e.target.parentElement.remove();
-
-      // remove from local storage as well
-      removeTaskFromLocalStorage(e.target.parentElement);
-    }
-  }
-}
-
-// remove from local storage function
-function removeTaskFromLocalStorage(taskItem) {
-
-  let tasks;
-
-  if(localStorage.getItem('tasks') !== null) {
-
-    tasks = JSON.parse(localStorage.getItem('tasks'));
-
-    tasks.forEach(function(task, index) {
-
-      if(taskItem.firstChild.textContent === task) {
-
-        tasks.splice(index, 1);
-
-      }
-
-    });
-
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-
-  } 
-}
-
-// clear completed tasks when user clicks clear
-function clearCompleted(e) {
-
-  // slower method apparently
-  tasksActive.innerHTML = '';
-
-  // faster method
-  while(tasksActive.firstChild) {
-    tasksActive.removeChild(tasksActive.firstChild);
-  }
-
-  //clear all tasks from local storage
-  clearTasksFromLocalStorage();
-}
-
-// clear all stored tasks from storage
-function clearTasksFromLocalStorage() {
-
-  localStorage.clear();
-
-}
-
-// Filter tasks by search bar
-function filterTasks(e) {
-  const text = e.target.value.toLowerCase();
-
-  document.querySelectorAll('.active-task').forEach(function(task) {
-
-    const item = task.firstChild.textContent;
-
-    if(item.toLowerCase().indexOf(text) != -1) {
-
-      task.style.display = 'flex';
-
+  // declare EventListeners
+  clockIcon.addEventListener('click', timeDisplay);
+  taskInput.addEventListener('focus', showTaskInput);
+  taskInput.addEventListener('blur', hideTaskInput);
+  priorityLevelLabel.addEventListener('click', showLevels);
+  highPriority.addEventListener('click', setPriorityHigh);
+  mediumPriority.addEventListener('click', setPriorityMedium);
+  lowPriority.addEventListener('click', setPriorityLow);
+  addArrow.addEventListener('click', addNewTask);
+
+  // Listen for TTL events and set up TTL Array of options
+  ttlLabel.addEventListener('click', showTTL);
+  ttlLeft.addEventListener('click', shiftTTLLeft);
+  ttlRight.addEventListener('click', shiftTTLRight);
+
+  // allw user to add item by pressing enter
+  taskInput.addEventListener('keydown', function(event) {
+    // call addNewTask if user hits enter
+    if(event.keyCode === 13) {
+      event.preventDefault();
+      addNewTask();
+    } else if(taskInput.value.length > 1) {
+      showArrow();
     } else {
-
-      task.style.display = 'none';
-
+      hideArrow();
     }
   });
+}
+
+// -------------------------------------------------------------------------------
+// Add new task/goal to the active list
+function addNewTask() {
+  const li = document.createElement('li');
+  const taskDescript = taskInput.value;
+  // getting value from priority input
+  const priorityValue = unfoldSelect.value;
+  const ttlArray = setTTL();
+  const ttlValue = ttlArray[ttl.value];
+
+  li.innerHTML = `
+    <li class="${priorityValue} active-item">
+    <div class="checkbox">
+      <img class="checkbox-box" src="img/Shape-Square-100.png" alt="square checkbox">
+      <img class="checkbox-check" src="img/Check-100.png" alt="lefthanded checkmark">
+    </div>
+    <p class="item-description">${taskDescript}</p>
+    <span class="ttl-active">${ttlValue}</span>
+    <div class="edit-icon">
+      <img src="img/Editor-100.png" alt="pencil edit icon">
+    </div>
+    </li>
+  `;
+
+  if(taskDescript === '') {
+    taskInput.classList = 'required';
+    setTimeout(removeRequired, 1000);
+  } else {
+    itemList.appendChild(li);
+    taskInput.value = '';
+    hideArrow();
+  }
+  
+}
+
+function removeRequired() {
+  taskInput.classList = '';
+}
+
+// -------------------------------------------------------------------------------
+// Allow user to cycle through TTL Options
+function shiftTTLLeft() {
+  console.log("You pressed left!");
+  setTTL(-1);
+  if(ttl.value === 1) {
+    setTimeout(closeTTL, 3000);
+  }
+}
+
+function shiftTTLRight() {
+  console.log("You pressed right!");
+  setTTL(1);
+  if(ttl.value === 1) {
+    setTimeout(closeTTL, 3000);
+  }
+}
+
+function showTTL() {
+  ttlLabel.classList = 'form-label show-ttl';
+  ttl.classList = 'fade-in';
+  ttlLeft.classList = 'fade-in';
+  ttlRight.classList = 'fade-in';
+  setTimeout(closeTTL, 5000);
+}
+
+function closeTTL() {
+  if(ttl.value === 1) {
+    ttlLabel.classList = 'form-label close-ttl';
+    ttl.classList = 'fade-out';
+    ttlLeft.classList = 'fade-out';
+    ttlRight.classList = 'fade-out';
+  }
+}
+
+function setTTL(ttlShift) {
+  const ttlOptions = {
+    1: 'Off',
+    2: '24 Hours',
+    3: '7 Days',
+    4: '30 Days',
+    5: 'End of Day',
+    6: 'End of Week',
+    7: 'End of Month'
+  };
+
+  if(ttl.innerHTML === '') {
+    ttl.innerHTML = ttlOptions[ttlShift];
+    ttl.value = ttlShift;
+  } else {
+    if(ttlShift === 1) {
+      if(ttl.value === Object.keys(ttlOptions).length) {
+        ttl.innerHTML = ttlOptions[ttlShift];
+        ttl.value = ttlShift;
+      } else {
+        ttl.innerHTML = ttlOptions[ttl.value + ttlShift];
+        ttl.value++;
+      }
+    } else if(ttlShift === -1) {
+      if(ttl.value === 1) {
+        ttl.innerHTML = ttlOptions[Object.keys(ttlOptions).length];
+        ttl.value = Object.keys(ttlOptions).length;
+      } else {
+        ttl.innerHTML = ttlOptions[ttl.value + ttlShift];
+        ttl.value--;
+      }
+    }
+  }
+  return ttlOptions;
+}
+
+setTTL(1);
+
+// -------------------------------------------------------------------------------
+// grab current date and set it in the UI
+function setDateTime() {
+  const d = new Date();
+  const date = formatDate(d);
+  const time = formatTime(d);
+
+  if(currentDate.innerHTML !== date) {
+    currentDate.innerHTML = date;
+  }
+  if(currentTime.innerHTML !== time) {
+    currentTime.innerHTML = time;
+  }
+}
+
+// set initial date
+setDateTime();
+// set date and time every second to keep time on track
+setInterval(setDateTime, 1000);
+
+
+// -------------------------------------------------------------------------------
+// convert date to custom format
+function formatDate(date) {
+
+  // define object for converting weekdays to names
+  const weekDays = {
+    0: 'Sunday',
+    1: 'Monday',
+    2: 'Tuesday',
+    3: 'Wednesday',
+    4: 'Thursday',
+    5: 'Friday',
+    6: 'Saturday'
+  };
+
+  // formatting for day of the month
+  const monthDays = {
+    1: `<sup>st</sup>`,
+    2: `<sup>nd</sup>`,
+    3: `<sup>rd</sup>`,
+    4: `<sup>th</sup>`,
+  };
+
+  // applying the proper superscript based on the day
+  let day = date.getDate();
+
+  if(day === 1 || day === 21 || day === 31) {
+    day += monthDays[1];
+  } else if( day === 2 || day === 22) {
+    day += monthDays[2];
+  } else if( day === 3 || day === 23) {
+    day += monthDays[3];
+  } else {
+  day += monthDays[4];
+  }
+
+  // Months of the year
+  const months = {
+    0: 'January',
+    1: 'February',
+    2: 'March',
+    3: 'April',
+    4: 'May',
+    5: 'June',
+    6: 'July',
+    7: 'August',
+    8: 'September',
+    9: 'October',
+    10: 'November',
+    11: 'December'
+  };
+
+  return `${weekDays[date.getDay()]}, 
+          ${months[date.getMonth()]} 
+          ${day} 
+          ${date.getFullYear()} 
+         `;
+}
+
+function formatTime(date) {
+  // make certain a zero is added before single digits
+  const hour = date.getHours();
+  const minutes = date.getMinutes();
+
+  if(hour < 10) {
+    if(minutes < 10) {
+      return `0${hour}:0${minutes}`;
+    } else {
+      return `0${hour}:${minutes}`;
+    }
+  } else {
+    if(minutes < 10) {
+      return `${hour}:0${minutes}`;
+    } else {
+      return `${hour}:${minutes}`;
+    }
+  }
+  
+}
+
+function timeDisplay() {
+  if(clockIcon.className === '') {
+    revealTime();
+  } else {
+    hideTime();
+  }
+}
+
+function revealTime() {
+  clockIcon.className = 'rotate';
+  currentTime.className = 'reveal-time';
+}
+
+function hideTime() {
+  clockIcon.className = '';
+  currentTime.className = 'hide-time';
+}
+
+function showTaskInput() {
+  taskInputLabel.classList = 'form-label hide-task-label';
+
+  // show add arrow
+  showArrow();
+
+  // if user hasn't set a priority autoselect normal
+  if(unfoldSelect.value === undefined) {
+    showLevels();
+    setTimeout(setPriorityMedium, 2000);
+  }
+}
+
+function showArrow() {
+  if(taskInput.value !== '') {
+    addArrow.classList = 'add-arrow show-arrow';
+  }
+}
+
+function hideArrow() {
+  addArrow.classList = 'add-arrow';
+}
+
+function hideTaskInput() {
+  if(taskInput.value === '') {
+
+    taskInputLabel.classList = 'form-label show-task-label';
+
+    // hide add arrow
+    hideArrow();
+
+    // hide priority levels if user hasn't selected one
+    setTimeout(hideLevels, 100)
+
+  } else {
+
+    taskInputLabel.classList = 'form-label hide-task-label';
+
+    // show add arrow
+    showArrow();
+
+    if(unfoldSelect.value === undefined) {
+      showLevels();
+      setTimeout(setPriorityMedium, 1000);
+    }
+  }
+}
+
+function showLevels() {
+  priorityLevelLabel.classList = 'form-label fade-out push-back';
+  highPriority.classList = 'priority-option high-priority reveal-high';
+  mediumPriority.classList = 'priority-option medium-priority reveal-medium';
+  lowPriority.classList = 'priority-option low-priority reveal-low';
+}
+
+function hideLevels() {
+  if(taskInput.value === '' && unfoldSelect.value === undefined) {
+    priorityLevelLabel.classList = 'form-label fade-in';
+    highPriority.classList = 'priority-option high-priority hide-high';
+    mediumPriority.classList = 'priority-option medium-priority hide-medium';
+    lowPriority.classList = 'priority-option low-priority hide-low';
+  }
+}
+
+function setPriorityHigh() {
+  highPriority.classList = 'priority-option high-priority reveal-high set-high';
+  mediumPriority.classList = 'priority-option medium-priority hide-medium';
+  lowPriority.classList = 'priority-option low-priority hide-low';
+  priorityLevelLabel.classList = 'form-label pull-forward';
+  unfoldSelect.value = 'high-p';
+}
+
+function setPriorityMedium() {
+  highPriority.classList = 'priority-option high-priority hide-high';
+  mediumPriority.classList = 'priority-option medium-priority reveal-medium set-medium';
+  lowPriority.classList = 'priority-option low-priority hide-low';
+  priorityLevelLabel.classList = 'form-label pull-forward';
+  unfoldSelect.value = 'medium-p';
+}
+
+function setPriorityLow() {
+  highPriority.classList = 'priority-option high-priority hide-high';
+  mediumPriority.classList = 'priority-option medium-priority hide-medium';
+  lowPriority.classList = 'priority-option low-priority reveal-low set-low';
+  priorityLevelLabel.classList = 'form-label pull-forward';
+  unfoldSelect.value = 'low-p';
 }

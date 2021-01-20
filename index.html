@@ -1,6 +1,6 @@
 <!----------------------------------------------------------------
 |
-| Welcome To Daily Checklist!
+| Welcome To CheckLister!
 |
 | I broke ground for this site on January 1st, 2021.
 | You can learn more about me at: coryschmidt.info
@@ -20,43 +20,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="description" content="A simple daily checklist to keep you on track for the day.">
-  <meta name="keywords" content="daily, checklist, productivity, practice, goals, javascript">
-  <meta name="robots" content="NOINDEX, NOFOLLOW">
+  <meta name="description" content="A simple daily checklist tool to keep you on track with your goals.">
+  <meta name="keywords" content="daily, checklist, productivity, goals, todo, to-do, checklister">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;700&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet"> 
   <link rel="stylesheet" href="style.css">
   <script src="logic.js" defer></script>
-  <link rel="icon" href="data:,">
-  <title>Daily Checklist</title>
+  <link rel="icon" href="img/Check-36.ico">
+  <title>CheckLister</title>
 </head>
+
 <body>
-  <!-- Dynamic header to display current day -->
+  <!-- Dynamic header to display current day and time -->
   <header>
-    <h2 id="current-day"></h2>
-    <h1>Daily Tasklist</h1>
+    <div class="center m-l">
+      <h1 id="site-title">CheckLister</h1>
+    </div>
+    <div class="right flex m-l">
+      <h2 id="current-date" class="m-m"></h2>
+      <h2 id="display-time" class="m-1">
+        <img id="header-clock" src="img/Clock-02-100.png" alt="clock icon" title="click here to display/hide time">
+        <span id="current-time" class="initial-time"></span>
+      </h2>
+    </div>
   </header>
+
   <main>
-    <!-- New Task Input Area -->
-    <section id="input-area">
-      <form class="task-form">
-        <label for="task-input">New Task:</label>
-        <input id="task-input" name="task-input" type="text" placeholder="try to make it quantifiable">
-        <input id="task-submit" name="Add" value="Add" type="submit">
+    <!-- New checklist item input area -->
+    <section id="input-area" class="forebox">
+      <form class="task-form flex">
+        <div class="input-group no-overflow">
+          <input id="task-input" name="task-input" type="text" autocomplete="off" placeholder="TRY TO MAKE IT QUANTIFIABLE" />
+          <label for="task-input" class="form-label" title="Click here to describe your task/goal/todo"><span class="label-content">New Goal</span></label>
+        </div>
+        <div class="input-group">
+          <div id="unfold-select">
+            <label for="priority-level" class="form-label" title="Set the priority level for this goal"><span class="label-content">Priority</span></label>
+            <div id="highp-btn" class="priority-option high-priority">HIGH</div>
+            <div id="mediump-btn" class="priority-option medium-priority">NORMAL</div>
+            <div id="lowp-btn" class="priority-option low-priority">LOW</div>
+          </div>
+        </div>
+        <hr>
+        <div class="input-group">
+          <label for="ttl" class="form-label" title="Set a TTL for your goal if you want it to automatically be removed from the active list"><span class="label-content">Time To Live</span></label>
+          <img id="ttl-left" class="fade-out" src="img/Arrowhead-Down-100.png" alt="left-arrow">
+          <div id="ttl" class="fade-out" name="ttl"></div>
+          <img id="ttl-right" class="fade-out" src="img/Arrowhead-Down-100.png" alt="right-arrow">
+        </div>
       </form>
     </section>
+    <!-- Arrow Button to add new task to active list -->
+    <div id="add-arrow" class="add-arrow">
+      <img src="img/Arrowhead-Down-100.png" alt="arrow facing down">
+    </div>
     <!-- Area to display yet to be completed tasks; will persist until individually deleted or checked -->
-    <section id="active-area" class="task-list">
-      <h3>Active:</h3>
-      <input id="filter" name="filter" type="text" placeholder="filter by keyword">
-      <ul id="active-tasks">
+    <section id="active-area" class="forebox">
+      <ul id="active-tasks" class="item-list">
       </ul>
     </section>
-    <!-- Area to display completed tasks; will persist until cleared -->
-    <section id="completed-area" class="task-list">
-      <h3>Completed:</h3>
-      <ul id="completed-tasks">
+    <!-- Area to display tasks that were checked in the active area; will persist until cleared 
+    <section id="archive-area">
+      <ul id="archive">
+        <li class="archive-item">
+          <p class="item-description">This is a completed task.</p>
+          <span class="completed"><img src="img/Race-Flag-100.png" alt="green waving race flag"></span>
+          <span class="time-completed">1/17/2021</span>
+        </li>
+        <li class="archive-item">
+          <p class="item-description">This is a failed task.</p>
+          <span class="failed"><img src="img/Race-Flag-102_red.png" alt="red fallen race flag"></span>
+        </li>
       </ul>
-      <a href="#" class="clear-tasks button">Clear</a>
-    </section>
+    </section> -->
   </main>
 </body>
+
 </html>
