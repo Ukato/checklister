@@ -16,19 +16,25 @@ const ttlLeft = document.querySelector('#ttl-left');
 const ttlRight = document.querySelector('#ttl-right');
 const addArrow = document.querySelector('#add-arrow');
 const itemList = document.querySelector('#active-tasks');
+const archive = document.querySelector('#archive');
 
 // load all Event Listeners
 loadEventListeners();
 
 function loadEventListeners() {
-  // declare EventListeners
+  // DOM Load event
+  document.addEventListener('DOMContentLoaded', getStoredTasks);
+  // Show/Hide Time
   clockIcon.addEventListener('click', timeDisplay);
+  // react to user input at task input
   taskInput.addEventListener('focus', showTaskInput);
   taskInput.addEventListener('blur', hideTaskInput);
+  // react to user input on priority selector
   priorityLevelLabel.addEventListener('click', showLevels);
   highPriority.addEventListener('click', setPriorityHigh);
   mediumPriority.addEventListener('click', setPriorityMedium);
   lowPriority.addEventListener('click', setPriorityLow);
+  // allow user to click arrow to add new goal/task
   addArrow.addEventListener('click', addNewTask);
 
   // Listen for TTL events and set up TTL Array of options
@@ -36,7 +42,7 @@ function loadEventListeners() {
   ttlLeft.addEventListener('click', shiftTTLLeft);
   ttlRight.addEventListener('click', shiftTTLRight);
 
-  // allw user to add item by pressing enter
+  // allow user to add item by pressing enter
   taskInput.addEventListener('keydown', function(event) {
     // call addNewTask if user hits enter
     if(event.keyCode === 13) {
@@ -48,7 +54,124 @@ function loadEventListeners() {
       hideArrow();
     }
   });
+
+  // remove item from active when checked and place in archive
+  itemList.addEventListener('click', function(event) {
+    //only fire if user is clicking on the checkbox
+    if(event.target.parentElement.classList.contains('checkbox')) {
+      // animate the checking action
+      event.target.parentElement.parentElement.classList += ' blip-out';
+      event.target.classList += ' checked';
+      // wait for checking animation to complete and then remove and add item to archive
+      setTimeout(function() {archiveTask(event.target.parentElement.nextElementSibling.innerHTML)}, 2000);
+      setTimeout(function() {event.target.parentElement.parentElement.remove()}, 2000);
+      // remove item from local storage
+      flushLocalStorage(event.target.parentElement.nextElementSibling.innerHTML);
+    }
+  });
+
+  // listen for user to click the edit item button
+  itemList.addEventListener('click', function(event) {
+    if(event.target.parentElement.classList.contains('edit-icon')) {
+      alert('Edit Functionality Coming Soon!');
+    }
+  });
+  // listen for user to try and change the priority level in edit mode
+  itemList.addEventListener('click', function(event) {
+    if(event.target.parentElement.classList.contains('changeHigh')) {
+      console.log('You clicked a priority change button.');
+    }
+  });
+  itemList.addEventListener('click', function(event) {
+    if(event.target.parentElement.classList.contains('changeNormal')) {
+      console.log('You clicked a priority change button.');
+    }
+  });
+  itemList.addEventListener('click', function(event) {
+    if(event.target.parentElement.classList.contains('changeLow')) {
+      console.log('You clicked a priority change button.');
+    }
+  });
 }
+
+// Allow user to edit an active item
+function enterEditMode(activeItem) {
+  console.log(activeItem.parentElement.parentElement);
+  const li = document.createElement('li');
+  li.classList = `edit-item`;
+  li.innerHTML = `
+    <div class="priority-change">
+      <img class="change-high" src="img/changeHigh-100.png" alt="red arrow">
+      <img class="change-normal" src="img/changeNormal-100.png" alt="white arrow">
+      <img class="change-low" src="img/changeLow-100.png" alt="green arrow">
+    </div>
+    <input type="text" class="description-edit" value="${activeItem.parentElement.parentElement.children[1].innerHTML}" />
+    <span class="ttl-edit">
+      <img class="ttl-left" src="img/Arrowhead-Down-100.png" alt="left-arrow">
+      <div class="ttl" name="ttl">${activeItem.parentElement.parentElement.children[2].innerHTML}</div>
+      <img class="ttl-right" src="img/Arrowhead-Down-100.png" alt="right-arrow">
+    </span>
+    <div class="edit-icon">
+      <img class="save-icon" src="img/Save-100.png" alt="floppy save icon">
+      <img class="delete-icon" src="img/Garbage-Open-100.png" alt="garbage can icon">
+    </div>
+  `;
+
+  activeItem.parentElement.parentElement.parentElement.replaceChild(li, activeItem.parentElement.parentElement);
+
+}
+
+// -------------------------------------------------------------------------------
+// remove entries or entire library from local storage
+function flushLocalStorage(removeItem) {
+  let active;
+  if(localStorage.getItem('active') === null) {
+    active = [];
+  } else {
+    active = JSON.parse(localStorage.getItem('active'));
+  }
+
+  active.forEach(function(item, index) {
+    if(item.description === removeItem) {
+      active.splice(index, 1);
+    }
+  });
+
+  localStorage.setItem('active', JSON.stringify(active));
+}
+
+// -------------------------------------------------------------------------------
+// Allow user to archive an active item/task
+function archiveTask(task) {
+  const li = document.createElement('li');
+  li.classList = 'archive-item';
+  const timestamp = setDateTime();
+  const variables = {
+    description: task,
+    time: timestamp
+  };
+
+  li.innerHTML = `
+    <p class="item-description">${task}</p>
+    <div class="time-completed">${timestamp}</div>
+    <div class="completed-flag">
+      <img src="img/Race-Flag-100.png" alt="green waving race flag">
+    </div>
+  `;
+
+  if(archive.childNodes) {
+    archive.insertBefore(li, archive.childNodes[0]);
+  } else {
+    archive.appendChild(li);
+  }
+
+  // persist archived item to local storage
+  storeArchived(variables);
+}
+
+// -------------------------------------------------------------------------------
+// Allow user to edit an active item/task
+
 
 // -------------------------------------------------------------------------------
 // Add new task/goal to the active list
@@ -58,20 +181,39 @@ function addNewTask() {
   // getting value from priority input
   const priorityValue = unfoldSelect.value;
   const ttlArray = setTTL();
-  const ttlValue = ttlArray[ttl.value];
+  let ttlValue;
+  let dueText;
+  if(ttl.value !== 1) {
+    ttlValue = ttlArray[ttl.value];
+    if(ttl.value < 5) {
+      dueText = 'Due in ';
+    } else {
+      dueText = 'Due by ';
+    }
+  } else {
+    ttlValue = '';
+    dueText = '';
+  }
+
+  const attributes = {
+    priority: priorityValue,
+    description: taskDescript,
+    due: dueText,
+    ttl: ttlValue
+  };
+
+  li.classList = `${priorityValue} active-item`;
 
   li.innerHTML = `
-    <li class="${priorityValue} active-item">
     <div class="checkbox">
       <img class="checkbox-box" src="img/Shape-Square-100.png" alt="square checkbox">
       <img class="checkbox-check" src="img/Check-100.png" alt="lefthanded checkmark">
     </div>
     <p class="item-description">${taskDescript}</p>
-    <span class="ttl-active">${ttlValue}</span>
+    <span class="ttl-active">${dueText}<br>${ttlValue}</span>
     <div class="edit-icon">
       <img src="img/Editor-100.png" alt="pencil edit icon">
     </div>
-    </li>
   `;
 
   if(taskDescript === '') {
@@ -82,9 +224,109 @@ function addNewTask() {
     taskInput.value = '';
     hideArrow();
   }
+
+  // persist new item to local storage
+  storeActive(attributes);
   
 }
 
+// Store task in local storage
+function storeActive(item) {
+  let active;
+  if(localStorage.getItem('active') === null) {
+    active = [];
+  } else {
+    active = JSON.parse(localStorage.getItem('active'));
+  }
+
+  active.push(item);
+
+  localStorage.setItem('active', JSON.stringify(active));
+}
+
+// Store archived item to local storage
+function storeArchived(item) {
+  let archive;
+  if(localStorage.getItem('archive') === null) {
+    archive = [];
+  } else {
+    archive = JSON.parse(localStorage.getItem('archive'));
+  }
+
+  archive.push(item);
+  console.log(item);
+  console.log(archive);
+
+  localStorage.setItem('archive', JSON.stringify(archive));
+}
+
+// load all locally stored data
+function getStoredTasks() {
+  getStoredActive();
+  getStoredArchive();
+}
+
+// Retrieve tasks from local storage and place them in UI
+function getStoredActive() {
+  let active;
+  if(localStorage.getItem('active') === null) {
+    active = [];
+  } else {
+    active = JSON.parse(localStorage.getItem('active'));
+
+    active.forEach(function(item) {
+      const li = document.createElement('li');
+      li.classList = `${item.priority} active-item`;
+  
+      li.innerHTML = `
+        <div class="checkbox">
+          <img class="checkbox-box" src="img/Shape-Square-100.png" alt="square checkbox">
+          <img class="checkbox-check" src="img/Check-100.png" alt="lefthanded checkmark">
+        </div>
+        <p class="item-description">${item.description}</p>
+        <span class="ttl-active">${item.due}<br>${item.ttl}</span>
+        <div class="edit-icon">
+          <img src="img/Editor-100.png" alt="pencil edit icon">
+        </div>
+      `;
+  
+      itemList.appendChild(li);
+  
+    });
+  }
+}
+
+// Retrieve archived tasks/goals that have been checked off the active list
+function getStoredArchive() {
+  let storedArchive;
+  if(localStorage.getItem('archive') === null) {
+    storedArchive = [];
+  } else {
+    storedArchive = JSON.parse(localStorage.getItem('archive'));
+
+    storedArchive.forEach(function(item) {
+      const li = document.createElement('li');
+      li.classList = 'archive-item';
+      const timestamp = item.time;
+
+      li.innerHTML = `
+        <p class="item-description">${item.description}</p>
+        <div class="time-completed">${timestamp}</div>
+        <div class="completed-flag">
+          <img src="img/Race-Flag-100.png" alt="green waving race flag">
+        </div>
+      `;
+
+      if(archive.childNodes) {
+        archive.insertBefore(li, archive.childNodes[0]);
+      } else {
+        archive.appendChild(li);
+      }
+    });
+  }
+}
+
+// remove required class from input
 function removeRequired() {
   taskInput.classList = '';
 }
@@ -175,6 +417,8 @@ function setDateTime() {
   if(currentTime.innerHTML !== time) {
     currentTime.innerHTML = time;
   }
+
+  return `${date} ${time}`;
 }
 
 // set initial date

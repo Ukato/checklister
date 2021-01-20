@@ -165,6 +165,36 @@ select {
   grid-template: 1fr / 0.4fr 4fr 1fr 0.4fr;
   font-size: 1.2rem;
   border-left: 0.25rem solid;
+  transition: position 1s;
+}
+
+.edit-item {
+  padding: 0.6rem 0.2rem;
+  display: grid;
+  grid-template: 1fr / 0.4fr 2fr 2fr 0.4fr;
+  font-size: 1.2rem;
+  border-left: 0.25rem solid;
+  transition: position 1s;
+}
+
+.priority-change {
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+.blip-out {
+  animation: blipOut 0.5s linear forwards 1.5s;
+}
+
+@keyframes blipOut {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0);
+  }
 }
 
 .checkbox {
@@ -179,6 +209,12 @@ select {
   opacity: 0.75;
 }
 
+.change-high, .change-normal, .change-low, .ttl-left, .ttl-right, .save-icon, .delete-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  cursor: pointer;
+}
+
 .edit-icon {
   margin-right: 0.4rem;
   justify-self: right;
@@ -189,6 +225,22 @@ select {
   left: 0;
   width: 2rem;
   opacity: 0;
+}
+
+.checked {
+  animation: checked 1s forwards;
+}
+
+@keyframes checked {
+  from {
+    opacity: 0;
+    transform: scale(2) rotate(-30deg);
+
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.5) rotate(0deg);
+  }
 }
 
 .ttl-active {
@@ -211,6 +263,36 @@ select {
 
 .low-p {
   border-color: var(--low-priority);
+}
+
+/* ----------------------------------------------------- */
+/* Archive Item/List Styles */
+.archive-item {
+  padding: 0.6rem 0.2rem;
+  display: grid;
+  grid-template: 1fr / 4fr 1.5fr 0.5fr;
+  font-size: 1.2rem;
+  border-left: 0.25rem solid var(--foreground-color);
+  opacity: 0.75;
+}
+
+.archive-item p {
+  padding: 0 1rem;
+}
+
+.time-completed {
+  justify-self: right;
+  text-align: right;
+}
+
+.completed-flag {
+  justify-self: center;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.archive-separator {
+  margin-top: 70vh;
 }
 
 /* ----------------------------------------------------- */
@@ -255,10 +337,6 @@ select {
 .fade-in {
   transition: opacity 0.5s;
   opacity: 1;
-}
-
-.required {
-
 }
 
 .label-content {
@@ -704,8 +782,8 @@ label:hover {
   cursor: pointer;
 }
 
-#active-area {
+#active-area, #archive-area {
   margin: 0.8rem auto;
   max-width: 800px;
-  transition: position 1s;
+  transition: position 1s, height 1s;
 }
