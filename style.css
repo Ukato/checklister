@@ -101,6 +101,19 @@ select {
   cursor: pointer;
 }
 
+textarea {
+  padding: 0.4rem;
+  appearance: none;
+  background-color: var(--foreground-color);
+  color: var(--background-color);
+  font-family: var(--main-font);
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  resize: none;
+}
+
 /* ----------------------------------------------------- */
 /* CSS Class Level Styles */
 .left {
@@ -156,22 +169,13 @@ select {
 .item-list {
   display: grid;
   grid-template: auto / auto;
-  grid-gap: 1.5rem;
+  grid-gap: 1.2rem;
 }
 
 .active-item {
   padding: 0.6rem 0.2rem;
   display: grid;
-  grid-template: 1fr / 0.4fr 4fr 1fr 0.4fr;
-  font-size: 1.2rem;
-  border-left: 0.25rem solid;
-  transition: position 1s;
-}
-
-.edit-item {
-  padding: 0.6rem 0.2rem;
-  display: grid;
-  grid-template: 1fr / 0.4fr 2fr 2fr 0.4fr;
+  grid-template: 1fr / 0.4fr 3.5fr 1.5fr 0.6fr;
   font-size: 1.2rem;
   border-left: 0.25rem solid;
   transition: position 1s;
@@ -181,8 +185,6 @@ select {
   display: flex;
   flex-direction: column;
 }
-
-
 
 .blip-out {
   animation: blipOut 0.5s linear forwards 1.5s;
@@ -198,32 +200,35 @@ select {
 }
 
 .checkbox {
+  position: relative;
+  cursor: pointer;
+  opacity: 0.75;
   justify-self: center;
 }
 
-.checkbox, .edit-icon {
-  position: relative;
-  width: 1.5rem;
-  height: 1.5rem;
-  cursor: pointer;
-  opacity: 0.75;
-}
-
-.change-high, .change-normal, .change-low, .ttl-left, .ttl-right, .save-icon, .delete-icon {
+.checkbox-box, .checkbox-check, .change-high, .change-normal, .change-low, .item-ttl-up, .item-ttl-down, .save-icon, .delete-icon, .pencil-icon {
+  margin: 0.4rem;
   width: 1.5rem;
   height: 1.5rem;
   cursor: pointer;
 }
 
 .edit-icon {
-  margin-right: 0.4rem;
-  justify-self: right;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+
+}
+
+.checkbox-box {
+  margin: 0;
 }
 
 .checkbox-check {
+  margin: 0;
   position: absolute;
   left: 0;
-  width: 2rem;
   opacity: 0;
 }
 
@@ -243,14 +248,24 @@ select {
   }
 }
 
-.ttl-active {
+.ttl-active, .ttl-edit {
+  position: relative;
   margin: 0 0.4rem;
+  width: 100%;
   align-self: flex-start;
   justify-self: center;
   font-size: 1rem;
   font-weight: 700;
   text-transform: uppercase;
   text-align: center;
+}
+
+.item-ttl-up, .item-ttl-down {
+  cursor: pointer;
+}
+
+.item-ttl-up {
+  transform: rotate(180deg);
 }
 
 .high-p {

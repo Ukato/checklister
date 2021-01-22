@@ -55,9 +55,10 @@ function loadEventListeners() {
     }
   });
 
-  // remove item from active when checked and place in archive
+  // listen for user to click inside the active items list
   itemList.addEventListener('click', function(event) {
-    //only fire if user is clicking on the checkbox
+
+    // remove item from active when checked and place in archive
     if(event.target.parentElement.classList.contains('checkbox')) {
       // animate the checking action
       event.target.parentElement.parentElement.classList += ' blip-out';
@@ -68,61 +69,90 @@ function loadEventListeners() {
       // remove item from local storage
       flushLocalStorage(event.target.parentElement.nextElementSibling.innerHTML);
     }
-  });
 
-  // listen for user to click the edit item button
-  itemList.addEventListener('click', function(event) {
-    if(event.target.parentElement.classList.contains('edit-icon')) {
-      alert('Edit Functionality Coming Soon!');
+    // listen for user to click the edit icon
+    if(event.target.classList.contains('pencil-icon')) {
+      enterEditMode(event.target.parentElement.parentElement);
+      flushLocalStorage(event.target.parentElement.parentElement.children[1].value);
+    }
+
+    // listen for the user to click the delete icon
+    if(event.target.classList.contains('delete-icon')) {
+      // remove item from local storage
+      flushLocalStorage(event.target.parentElement.parentElement.children[1].value);
+      event.target.parentElement.parentElement.remove();
+    }
+
+    // listen for the user to click the save icon
+    if(event.target.classList.contains('save-icon')) {
+      saveChanges(event.target.parentElement.parentElement);
+    }
+
+    // listen for user to change priority to high
+    if(event.target.classList.contains('change-high')) {
+      event.target.parentElement.parentElement.classList = 'high-p active-item';
+    }
+
+    // listen for user to change priority to normal
+    if(event.target.classList.contains('change-normal')) {
+      event.target.parentElement.parentElement.classList = 'medium-p active-item';
+    }
+
+    // listen for user to change priority to low
+    if(event.target.classList.contains('change-low')) {
+      event.target.parentElement.parentElement.classList = 'low-p active-item';
+    }
+
+    // listen for user to click ttl up arrow
+    if(event.target.classList.contains('item-ttl-up')) {
+      setItemTTL(-1, event.target.parentElement.children[1])
+    }
+
+    // listen for user to click ttl down arrow
+    if(event.target.classList.contains('item-ttl-down')) {
+      setItemTTL(1, event.target.parentElement.children[1])
     }
   });
-  // listen for user to try and change the priority level in edit mode
-  itemList.addEventListener('click', function(event) {
-    if(event.target.parentElement.classList.contains('changeHigh')) {
-      console.log('You clicked a priority change button.');
-    }
-  });
-  itemList.addEventListener('click', function(event) {
-    if(event.target.parentElement.classList.contains('changeNormal')) {
-      console.log('You clicked a priority change button.');
-    }
-  });
-  itemList.addEventListener('click', function(event) {
-    if(event.target.parentElement.classList.contains('changeLow')) {
-      console.log('You clicked a priority change button.');
-    }
-  });
+  
 }
 
 // Allow user to edit an active item
 function enterEditMode(activeItem) {
-  console.log(activeItem.parentElement.parentElement);
+  // fill the edit ttl section with 'off' if item has no current ttl
+  if(activeItem.children[2].innerHTML === '<br>') {
+    activeItem.children[2].innerHTML = 'Off'
+  }
+
   const li = document.createElement('li');
-  li.classList = `edit-item`;
+  li.classList = activeItem.classList;
   li.innerHTML = `
     <div class="priority-change">
-      <img class="change-high" src="img/changeHigh-100.png" alt="red arrow">
-      <img class="change-normal" src="img/changeNormal-100.png" alt="white arrow">
-      <img class="change-low" src="img/changeLow-100.png" alt="green arrow">
+      <img class="change-high" src="img/changeHigh-100.png" alt="red arrow" title="Change priority to high">
+      <img class="change-normal" src="img/changeNormal-100.png" alt="white arrow" title="Change priority to normal">
+      <img class="change-low" src="img/changeLow-100.png" alt="green arrow" title="Change priority to low">
     </div>
-    <input type="text" class="description-edit" value="${activeItem.parentElement.parentElement.children[1].innerHTML}" />
+    <textarea type="text" class="description-edit">${activeItem.children[1].innerHTML}</textarea>
     <span class="ttl-edit">
-      <img class="ttl-left" src="img/Arrowhead-Down-100.png" alt="left-arrow">
-      <div class="ttl" name="ttl">${activeItem.parentElement.parentElement.children[2].innerHTML}</div>
-      <img class="ttl-right" src="img/Arrowhead-Down-100.png" alt="right-arrow">
+      <img class="item-ttl-up" src="img/Arrowhead-Down-100.png" alt="up-arrow">
+      <div class="active-item-ttl" name="ttl">${activeItem.children[2].innerHTML}</div>
+      <img class="item-ttl-down" src="img/Arrowhead-Down-100.png" alt="down-arrow">
     </span>
     <div class="edit-icon">
-      <img class="save-icon" src="img/Save-100.png" alt="floppy save icon">
-      <img class="delete-icon" src="img/Garbage-Open-100.png" alt="garbage can icon">
+      <img class="save-icon" src="img/Save-100.png" alt="floppy save icon" title="Save Goal">
+      <img class="delete-icon" src="img/Garbage-100.png" alt="garbage can icon" title="Delete Goal">
     </div>
   `;
 
-  activeItem.parentElement.parentElement.parentElement.replaceChild(li, activeItem.parentElement.parentElement);
+  // store values in newly made elements
+  li.children[1].value = activeItem.children[1].value;
+  li.children[2].children[1].value = activeItem.children[2].value;
+
+  activeItem.parentElement.replaceChild(li, activeItem);
 
 }
 
 // -------------------------------------------------------------------------------
-// remove entries or entire library from local storage
+// remove active entries from local storage
 function flushLocalStorage(removeItem) {
   let active;
   if(localStorage.getItem('active') === null) {
@@ -170,8 +200,69 @@ function archiveTask(task) {
 }
 
 // -------------------------------------------------------------------------------
-// Allow user to edit an active item/task
+// Allow user to save currently editing item
+function saveChanges(item) {
+  li = document.createElement('li');
+  const taskDescript = item.children[1].value;
+  // getting value from priority input
+  let priorityValue;
+  if(item.classList.contains('high-p')) {
+    priorityValue = 'high-p';
+  } else if(item.classList.contains('medium-p')) {
+    priorityValue = 'medium-p';
+  } else if(item.classList.contains('low-p')) {
+    priorityValue = 'low-p';
+  }
 
+  console.log(item.children[2].children[1].value);
+
+  const ttlArray = setTTL();
+  let ttlValue;
+  let dueText;
+  if(item.children[2].children[1].value !== 1) {
+    ttlValue = ttlArray[item.children[2].children[1].value];
+    if(item.children[2].children[1].value < 5) {
+      dueText = 'Due in ';
+    } else {
+      dueText = 'Due by ';
+    }
+  } else {
+    ttlValue = '';
+    dueText = '';
+  }
+
+  const attributes = {
+    priority: priorityValue,
+    description: taskDescript,
+    due: dueText,
+    ttl: ttlValue,
+    index: item.children[2].children[1].value
+  };
+
+  li.classList = `${priorityValue} active-item`;
+  
+
+  li.innerHTML = `
+    <div class="checkbox">
+      <img class="checkbox-box" src="img/Shape-Square-100.png" alt="square checkbox">
+      <img class="checkbox-check" src="img/Check-100.png" alt="lefthanded checkmark">
+    </div>
+    <p class="item-description">${taskDescript}</p>
+    <span class="ttl-active">${dueText}<br>${ttlValue}</span>
+    <div class="edit-icon">
+      <img class="pencil-icon" src="img/Editor-100.png" alt="pencil edit icon" title="Edit Goal">
+    </div>
+  `;
+
+  // store values in elements so edit state can use them
+  li.children[1].value = taskDescript;
+  li.children[2].value = item.children[2].children[1].value;
+
+  // persist new item to local storage
+  storeActive(attributes);
+
+  item.parentElement.replaceChild(li, item);
+}
 
 // -------------------------------------------------------------------------------
 // Add new task/goal to the active list
@@ -199,10 +290,12 @@ function addNewTask() {
     priority: priorityValue,
     description: taskDescript,
     due: dueText,
-    ttl: ttlValue
+    ttl: ttlValue,
+    index: ttl.value
   };
 
   li.classList = `${priorityValue} active-item`;
+  
 
   li.innerHTML = `
     <div class="checkbox">
@@ -212,9 +305,13 @@ function addNewTask() {
     <p class="item-description">${taskDescript}</p>
     <span class="ttl-active">${dueText}<br>${ttlValue}</span>
     <div class="edit-icon">
-      <img src="img/Editor-100.png" alt="pencil edit icon">
+      <img class="pencil-icon" src="img/Editor-100.png" alt="pencil edit icon" title="Edit Goal">
     </div>
   `;
+
+  // store values in elements so edit state can use them
+  li.children[1].value = taskDescript;
+  li.children[2].value = ttl.value;
 
   if(taskDescript === '') {
     taskInput.classList = 'required';
@@ -254,8 +351,6 @@ function storeArchived(item) {
   }
 
   archive.push(item);
-  console.log(item);
-  console.log(archive);
 
   localStorage.setItem('archive', JSON.stringify(archive));
 }
@@ -286,9 +381,13 @@ function getStoredActive() {
         <p class="item-description">${item.description}</p>
         <span class="ttl-active">${item.due}<br>${item.ttl}</span>
         <div class="edit-icon">
-          <img src="img/Editor-100.png" alt="pencil edit icon">
+          <img class="pencil-icon" src="img/Editor-100.png" alt="pencil edit icon" title="Edit Goal">
         </div>
       `;
+
+      // store values in elements so edit state can use them
+      li.children[1].value = item.description;
+      li.children[2].value = item.index;
   
       itemList.appendChild(li);
   
@@ -333,8 +432,9 @@ function removeRequired() {
 
 // -------------------------------------------------------------------------------
 // Allow user to cycle through TTL Options
+
+// Top TTL Input
 function shiftTTLLeft() {
-  console.log("You pressed left!");
   setTTL(-1);
   if(ttl.value === 1) {
     setTimeout(closeTTL, 3000);
@@ -342,7 +442,6 @@ function shiftTTLLeft() {
 }
 
 function shiftTTLRight() {
-  console.log("You pressed right!");
   setTTL(1);
   if(ttl.value === 1) {
     setTimeout(closeTTL, 3000);
@@ -403,6 +502,37 @@ function setTTL(ttlShift) {
 }
 
 setTTL(1);
+
+// active item edit mode TTL
+function setItemTTL(ttlShift, ttlElement) {
+  const ttlOptions = {
+    1: 'Off',
+    2: '24 Hours',
+    3: '7 Days',
+    4: '30 Days',
+    5: 'End of Day',
+    6: 'End of Week',
+    7: 'End of Month'
+  };
+
+  if(ttlShift === 1) {
+    if(ttlElement.value === Object.keys(ttlOptions).length) {
+      ttlElement.innerHTML = ttlOptions[ttlShift];
+      ttlElement.value = ttlShift;
+    } else {
+      ttlElement.innerHTML = ttlOptions[ttlElement.value + ttlShift];
+      ttlElement.value++;
+    }
+  } else if(ttlShift === -1) {
+    if(ttlElement.value === 1) {
+      ttlElement.innerHTML = ttlOptions[Object.keys(ttlOptions).length];
+      ttlElement.value = Object.keys(ttlOptions).length;
+    } else {
+      ttlElement.innerHTML = ttlOptions[ttlElement.value + ttlShift];
+      ttlElement.value--;
+    }
+  }
+}
 
 // -------------------------------------------------------------------------------
 // grab current date and set it in the UI
