@@ -874,6 +874,7 @@ label:hover {
 
   #task-input {
     min-width: 200px;
+    font-size: 1rem;
   }
 
   #input-area {
