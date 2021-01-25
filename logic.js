@@ -61,13 +61,22 @@ function loadEventListeners() {
     // remove item from active when checked and place in archive
     if(event.target.parentElement.classList.contains('checkbox')) {
       // animate the checking action
-      event.target.parentElement.parentElement.classList += ' blip-out';
       event.target.classList += ' checked';
-      // wait for checking animation to complete and then remove and add item to archive
-      setTimeout(function() {archiveTask(event.target.parentElement.nextElementSibling.innerHTML)}, 2000);
-      setTimeout(function() {event.target.parentElement.parentElement.remove()}, 2000);
-      // remove item from local storage
-      flushLocalStorage(event.target.parentElement.nextElementSibling.innerHTML);
+
+      // if item has a ttl then just deactivate it
+      if(event.target.parentElement.parentElement.children[2].lastChild.value !== 0) {
+        setTimeout(function() {event.target.parentElement.classList = 'deactivated-checkbox';}, 2000);
+        setTimeout(updateTTLStatus, 2100);
+      } else {
+        // close out the entry visually
+        event.target.parentElement.parentElement.classList += ' blip-out';
+        // wait for checking animation to complete and then remove and add item to archive
+        setTimeout(function() {archiveTask(event.target.parentElement.nextElementSibling.innerHTML)}, 2000);
+        setTimeout(function() {event.target.parentElement.parentElement.remove()}, 2000);
+        // remove item from local storage
+        flushLocalStorage(event.target.parentElement.nextElementSibling.innerHTML);
+      }
+      
     }
 
     // listen for user to click the edit icon
@@ -119,8 +128,8 @@ function loadEventListeners() {
 // Allow user to edit an active item
 function enterEditMode(activeItem) {
   // fill the edit ttl section with 'off' if item has no current ttl
-  if(activeItem.children[2].innerHTML === '<br>') {
-    activeItem.children[2].innerHTML = 'Off'
+  if(activeItem.children[2].lastChild.innerHTML === '') {
+    activeItem.children[2].lastChild.innerHTML = 'Off';
   }
 
   const li = document.createElement('li');
@@ -134,7 +143,7 @@ function enterEditMode(activeItem) {
     <textarea type="text" class="description-edit">${activeItem.children[1].innerHTML}</textarea>
     <span class="ttl-edit">
       <img class="item-ttl-up" src="img/Arrowhead-Down-100.png" alt="up-arrow">
-      <div class="active-item-ttl" name="ttl">${activeItem.children[2].innerHTML}</div>
+      <div class="active-item-ttl" name="ttl"><span>${activeItem.children[2].innerHTML}</span></div>
       <img class="item-ttl-down" src="img/Arrowhead-Down-100.png" alt="down-arrow">
     </span>
     <div class="edit-icon">
@@ -144,8 +153,13 @@ function enterEditMode(activeItem) {
   `;
 
   // store values in newly made elements
+  li.children[0].value = activeItem.children[0].classList.value;
+  console.log(activeItem.children[0].classList.value);
+  li.children[0].children[1].value = activeItem.children[0].children[1].classList.value;
+  console.log(activeItem.children[0].children[1].classList.value);
   li.children[1].value = activeItem.children[1].value;
   li.children[2].children[1].value = activeItem.children[2].value;
+  li.children[2].children[1].children[0].value = activeItem.children[2].lastChild.value;
 
   activeItem.parentElement.replaceChild(li, activeItem);
 
@@ -214,21 +228,45 @@ function saveChanges(item) {
     priorityValue = 'low-p';
   }
 
-  console.log(item.children[2].children[1].value);
+  // creating ttl output and timer
+  const d = new Date();
+  currentd = d.getTime();
+  let twentyFourHours = currentd + 86400000,
+      sevenDays = currentd + 604800000,
+      thirtyDays = currentd + 2592000000;
+      eod = currentd + ((24 - d.getHours()) * 3600000) - (d.getMinutes() * 60000),
+      eow = currentd + ((7 - d.getDay()) * 86400000) - ((d.getHours()) * 3600000) - (d.getMinutes() * 60000), 
+      eom = currentd + ((31 - d.getDate()) * 86400000) - ((d.getHours()) * 3600000) - (d.getMinutes() * 60000);
+
+
+  let ttlTimeouts = {
+    1: 0,
+    2: twentyFourHours,
+    3: sevenDays,
+    4: thirtyDays,
+    5: eod,
+    6: eow,
+    7: eom
+  };
 
   const ttlArray = setTTL();
   let ttlValue;
   let dueText;
-  if(item.children[2].children[1].value !== 1) {
-    ttlValue = ttlArray[item.children[2].children[1].value];
-    if(item.children[2].children[1].value < 5) {
-      dueText = 'Due in ';
+  if(item.children[2].children[1].children[0].value <= 7) {
+    if(item.children[2].children[1].value !== 1) {
+      ttlValue = ttlArray[item.children[2].children[1].value];
+      if(item.children[2].children[1].value < 5) {
+        dueText = 'Due in <br>';
+      } else {
+        dueText = 'Due by <br>';
+      }
     } else {
-      dueText = 'Due by ';
+      ttlValue = '';
+      dueText = '';
     }
   } else {
-    ttlValue = '';
-    dueText = '';
+    dueText = item.children[2].children[1].children[0].firstChild.data + ' <br>';
+    ttlValue = item.children[2].children[1].children[0].children[1].innerHTML;
   }
 
   const attributes = {
@@ -236,27 +274,43 @@ function saveChanges(item) {
     description: taskDescript,
     due: dueText,
     ttl: ttlValue,
-    index: item.children[2].children[1].value
+    index: item.children[2].children[1].value,
+    timer: item.children[2].children[1].lastChild.value,
+    checkstate: item.children[0].value,
+    checkmarkstate: item.children[0].children[1].value
   };
+
+  if(item.children[2].children[1].value === 1) {
+    attributes.checkstate = 'checkbox';
+    attributes.checkmarkstate = 'checkbox-check';
+  }
+
+  console.log(attributes.checkstate, attributes.checkmarkstate);
 
   li.classList = `${priorityValue} active-item`;
   
-
   li.innerHTML = `
-    <div class="checkbox">
+    <div class="${attributes.checkstate}">
       <img class="checkbox-box" src="img/Shape-Square-100.png" alt="square checkbox">
-      <img class="checkbox-check" src="img/Check-100.png" alt="lefthanded checkmark">
+      <img class="${attributes.checkmarkstate}" src="img/Check-100.png" alt="lefthanded checkmark" title="Mark as complete">
     </div>
     <p class="item-description">${taskDescript}</p>
-    <span class="ttl-active">${dueText}<br>${ttlValue}</span>
+    <span class="ttl-active">${dueText}<span>${ttlValue}</span></span>
     <div class="edit-icon">
-      <img class="pencil-icon" src="img/Editor-100.png" alt="pencil edit icon" title="Edit Goal">
+      <img class="pencil-icon" src="img/Pencil-100.png" alt="pencil edit icon" title="Edit Goal">
     </div>
   `;
 
   // store values in elements so edit state can use them
+  li.children[0].value = attributes.checkstate;
   li.children[1].value = taskDescript;
   li.children[2].value = item.children[2].children[1].value;
+  if(item.children[2].children[1].lastChild.value !== 1) {
+    li.children[2].lastChild.value = item.children[2].children[1].lastChild.value;
+  } else {
+    li.children[2].lastChild.value = ttlTimeouts[attributes.index];
+    attributes.timer = ttlTimeouts[attributes.index];
+  }
 
   // persist new item to local storage
   storeActive(attributes);
@@ -271,15 +325,36 @@ function addNewTask() {
   const taskDescript = taskInput.value;
   // getting value from priority input
   const priorityValue = unfoldSelect.value;
+
+  // creating ttl output and timer
+  const d = new Date();
+  currentd = d.getTime();
+  let twentyFourHours = currentd + 86400000,
+      sevenDays = currentd + 604800000,
+      thirtyDays = currentd + 2592000000;
+      eod = currentd + ((24 - d.getHours()) * 3600000) - (d.getMinutes() * 60000),
+      eow = currentd + ((7 - d.getDay()) * 86400000) - ((d.getHours()) * 3600000) - (d.getMinutes() * 60000), 
+      eom = currentd + ((31 - d.getDate()) * 86400000) - ((d.getHours()) * 3600000) - (d.getMinutes() * 60000);
+
+  let ttlTimeouts = {
+    1: 0,
+    2: twentyFourHours,
+    3: sevenDays,
+    4: thirtyDays,
+    5: eod,
+    6: eow,
+    7: eom
+  };
+
   const ttlArray = setTTL();
   let ttlValue;
   let dueText;
   if(ttl.value !== 1) {
     ttlValue = ttlArray[ttl.value];
     if(ttl.value < 5) {
-      dueText = 'Due in ';
+      dueText = 'Due in <br>';
     } else {
-      dueText = 'Due by ';
+      dueText = 'Due by <br>';
     }
   } else {
     ttlValue = '';
@@ -291,27 +366,31 @@ function addNewTask() {
     description: taskDescript,
     due: dueText,
     ttl: ttlValue,
-    index: ttl.value
+    index: ttl.value,
+    timer: ttlTimeouts[ttl.value],
+    checkstate: 'checkbox',
+    checkmarkstate: 'checkbox-check'
   };
 
   li.classList = `${priorityValue} active-item`;
   
-
   li.innerHTML = `
-    <div class="checkbox">
+    <div class="${attributes.checkstate}">
       <img class="checkbox-box" src="img/Shape-Square-100.png" alt="square checkbox">
-      <img class="checkbox-check" src="img/Check-100.png" alt="lefthanded checkmark">
+      <img class="${attributes.checkmarkstate}" src="img/Check-100.png" alt="lefthanded checkmark" title="Mark as complete">
     </div>
     <p class="item-description">${taskDescript}</p>
-    <span class="ttl-active">${dueText}<br>${ttlValue}</span>
+    <span class="ttl-active">${dueText}<span>${ttlValue}</span></span>
     <div class="edit-icon">
-      <img class="pencil-icon" src="img/Editor-100.png" alt="pencil edit icon" title="Edit Goal">
+      <img class="pencil-icon" src="img/Pencil-100.png" alt="pencil edit icon" title="Edit Goal">
     </div>
   `;
 
   // store values in elements so edit state can use them
+  li.children[0].value = attributes.checkstate;
   li.children[1].value = taskDescript;
   li.children[2].value = ttl.value;
+  li.children[2].lastChild.value = ttlTimeouts[ttl.value];
 
   if(taskDescript === '') {
     taskInput.classList = 'required';
@@ -324,7 +403,6 @@ function addNewTask() {
 
   // persist new item to local storage
   storeActive(attributes);
-  
 }
 
 // Store task in local storage
@@ -374,20 +452,22 @@ function getStoredActive() {
       li.classList = `${item.priority} active-item`;
   
       li.innerHTML = `
-        <div class="checkbox">
+        <div class="${item.checkstate}">
           <img class="checkbox-box" src="img/Shape-Square-100.png" alt="square checkbox">
-          <img class="checkbox-check" src="img/Check-100.png" alt="lefthanded checkmark">
+          <img class="${item.checkmarkstate}" src="img/Check-100.png" alt="lefthanded checkmark" title="Mark as complete">
         </div>
         <p class="item-description">${item.description}</p>
-        <span class="ttl-active">${item.due}<br>${item.ttl}</span>
+        <span class="ttl-active">${item.due}<span>${item.ttl}</span></span>
         <div class="edit-icon">
-          <img class="pencil-icon" src="img/Editor-100.png" alt="pencil edit icon" title="Edit Goal">
+          <img class="pencil-icon" src="img/Pencil-100.png" alt="pencil edit icon" title="Edit Goal">
         </div>
       `;
 
       // store values in elements so edit state can use them
+      li.children[0].value = item.checkstate;
       li.children[1].value = item.description;
       li.children[2].value = item.index;
+      li.children[2].lastChild.value = item.timer;
   
       itemList.appendChild(li);
   
@@ -517,21 +597,23 @@ function setItemTTL(ttlShift, ttlElement) {
 
   if(ttlShift === 1) {
     if(ttlElement.value === Object.keys(ttlOptions).length) {
-      ttlElement.innerHTML = ttlOptions[ttlShift];
+      ttlElement.children[0].innerHTML = ttlOptions[ttlShift];
       ttlElement.value = ttlShift;
     } else {
-      ttlElement.innerHTML = ttlOptions[ttlElement.value + ttlShift];
+      ttlElement.children[0].innerHTML = ttlOptions[ttlElement.value + ttlShift];
       ttlElement.value++;
     }
   } else if(ttlShift === -1) {
     if(ttlElement.value === 1) {
-      ttlElement.innerHTML = ttlOptions[Object.keys(ttlOptions).length];
+      ttlElement.children[0].innerHTML = ttlOptions[Object.keys(ttlOptions).length];
       ttlElement.value = Object.keys(ttlOptions).length;
     } else {
-      ttlElement.innerHTML = ttlOptions[ttlElement.value + ttlShift];
+      ttlElement.children[0].innerHTML = ttlOptions[ttlElement.value + ttlShift];
       ttlElement.value--;
     }
   }
+
+  ttlElement.children[0].value = 1;
 }
 
 // -------------------------------------------------------------------------------
@@ -541,6 +623,7 @@ function setDateTime() {
   const date = formatDate(d);
   const time = formatTime(d);
 
+  // keep from updating the html page unless necessary
   if(currentDate.innerHTML !== date) {
     currentDate.innerHTML = date;
   }
@@ -556,6 +639,143 @@ setDateTime();
 // set date and time every second to keep time on track
 setInterval(setDateTime, 1000);
 
+// run through active items and update their ttl values
+function updateTTLStatus() {
+  document.querySelectorAll('.active-item').forEach(function(item) {
+    // capture ttl type
+    const itemTTLType = item.children[2].value;
+    
+    // move on to next time if it has no ttl, ie value is 1
+    if(itemTTLType !== 1 && item.children[3].classList.contains('edit-icon')) {
+      const currentd = new Date().getTime();
+      let itemTTL = item.children[2].lastChild.value;
+
+      // first check to see if the ttl of the item is past, and if so reset it
+      if(currentd > itemTTL) {
+        item.children[0].classList = 'checkbox';
+        item.children[0].children[1].classList = 'checkbox-check';
+
+        // define new ttl times to reset current items ttl
+        let twentyFourHours = currentd + 86400000,
+        sevenDays = currentd + 604800000,
+        thirtyDays = currentd + 2592000000;
+        eod = currentd + ((24 - d.getHours()) * 3600000) - (d.getMinutes() * 60000),
+        eow = currentd + ((7 - d.getDay()) * 86400000) - ((d.getHours()) * 3600000) - (d.getMinutes() * 60000), 
+        eom = currentd + ((31 - d.getDate()) * 86400000) - ((d.getHours()) * 3600000) - (d.getMinutes() * 60000);
+
+        let ttlTimeouts = {
+          1: 0,
+          2: twentyFourHours,
+          3: sevenDays,
+          4: thirtyDays,
+          5: eod,
+          6: eow,
+          7: eom
+        };
+
+        itemTTL = ttlTimeouts[itemTTLType];
+      } else if(item.children[0].classList.value === 'deactivated-checkbox'){
+        if(itemTTLType < 5) {
+          item.children[2].firstChild.data = 'Resets in';
+        } else {
+          item.children[2].firstChild.data = 'Resets at';
+        }
+        item.children[2].lastChild.style.color = 'var(--foreground-color)';
+      }
+
+      // updates for 24 hour ttl
+      if(itemTTLType === 2) {
+        let updatedTime = Math.trunc((itemTTL - currentd) / 3600000 + 1);
+        if(updatedTime === 1) {
+          item.children[2].lastChild.innerHTML = `less than an hour`;
+        } else {
+          item.children[2].lastChild.innerHTML = `${updatedTime} hours`;
+        }
+        
+        if(updatedTime <= 4) {
+          item.children[2].lastChild.style.color = 'var(--high-priority)';
+        }
+      }
+
+      // updates for 7 day ttl
+      if(itemTTLType === 3) {
+        let updatedTime = Math.trunc((itemTTL - currentd) / 86400000 + 1);
+        if(updatedTime === 0) {
+          item.children[2].lastChild.innerHTML = `less than a day`;
+        } else {
+          item.children[2].lastChild.innerHTML = `${updatedTime} days`;
+        }
+
+        if(updatedTime <= 2) {
+          item.children[2].lastChild.style.color = 'var(--high-priority)';
+        }
+      }
+
+      // updates for 30 day ttl
+      if(itemTTLType === 4) {
+        let updatedTime = Math.trunc((itemTTL - currentd) / 86400000 + 1);
+        if(updatedTime === 0) {
+          item.children[2].lastChild.innerHTML = `less than a day`;
+        } else {
+          item.children[2].lastChild.innerHTML = `${updatedTime} days`;
+        }
+
+        if(updatedTime <= 5) {
+          item.children[2].lastChild.style.color = 'var(--high-priority)';
+        }
+      }
+
+      if(itemTTLType === 5 && itemTTL - currentd < 14400000) {
+        item.children[2].lastChild.style.color = 'var(--high-priority)';
+      } else if(itemTTLType === 6 && itemTTL - currentd < 86400000) {
+        item.children[2].lastChild.style.color = 'var(--high-priority)';
+      } else if(itemTTLType === 7 && itemTTL - currentd < 432000000) {
+        item.children[2].lastChild.style.color = 'var(--high-priority)';
+      }
+    }
+
+    if(!item.children[2].firstChild.data) {
+      item.children[2].firstChild.data = '';
+    }
+
+    const attributes = {
+      due: item.children[2].firstChild.data + ' <br>',
+      ttl: item.children[2].lastChild.innerHTML,
+      description: item.children[1].value,
+      checkstate: item.children[0].classList.value,
+      checkmarkstate: item.children[0].children[1].classList.value
+    };
+
+    updateLocalStorage(attributes);
+    
+  });
+
+  console.log("TTL Updated");
+}
+
+setInterval(updateTTLStatus, 5000);
+
+// -------------------------------------------------------------------------------
+// update items attributes in local storage
+function updateLocalStorage(item) {
+  let active;
+  if(localStorage.getItem('active') === null) {
+    active = [];
+  } else {
+    active = JSON.parse(localStorage.getItem('active'));
+  }
+
+  active.forEach(function(stored) {
+    if(item.description === stored.description) {
+      stored.due = item.due;
+      stored.ttl = item.ttl;
+      stored.checkstate = item.checkstate;
+      stored.checkmarkstate = item.checkmarkstate;
+    }
+  });
+
+  localStorage.setItem('active', JSON.stringify(active));
+}
 
 // -------------------------------------------------------------------------------
 // convert date to custom format
@@ -658,9 +878,6 @@ function hideTime() {
 function showTaskInput() {
   taskInputLabel.classList = 'form-label hide-task-label';
 
-  // show add arrow
-  showArrow();
-
   // if user hasn't set a priority autoselect normal
   if(unfoldSelect.value === undefined) {
     showLevels();
@@ -669,9 +886,7 @@ function showTaskInput() {
 }
 
 function showArrow() {
-  if(taskInput.value !== '') {
-    addArrow.classList = 'add-arrow show-arrow';
-  }
+  addArrow.classList = 'add-arrow show-arrow';
 }
 
 function hideArrow() {
@@ -683,23 +898,10 @@ function hideTaskInput() {
 
     taskInputLabel.classList = 'form-label show-task-label';
 
-    // hide add arrow
-    hideArrow();
-
-    // hide priority levels if user hasn't selected one
-    setTimeout(hideLevels, 100)
-
   } else {
 
     taskInputLabel.classList = 'form-label hide-task-label';
 
-    // show add arrow
-    showArrow();
-
-    if(unfoldSelect.value === undefined) {
-      showLevels();
-      setTimeout(setPriorityMedium, 1000);
-    }
   }
 }
 

@@ -35,7 +35,7 @@ body {
   height: 100vh;
   background-color: var(--background-color);
   display: grid;
-  grid-template: 0.1fr 1fr / 1fr;
+  grid-template: 0.1fr 1fr 1fr / 1fr;
   grid-template-areas: "header"
                        "main  ";
 }  
@@ -44,6 +44,7 @@ header {
   margin: 0 auto;
   padding: 0.5rem 1rem;
   max-width: var(--max-width);
+  min-height: 10vh;
   color: var(--accent-color);
   font-family: var(--header-font);
   grid-area: header;
@@ -55,8 +56,15 @@ header {
 
 main {
   margin: 1rem auto;
+  min-height: 90vh;
   font-family: var(--main-font);
   grid-area: main;
+}
+
+footer {
+  margin: 2rem auto;
+  min-width: 75vw;
+  font-family: var(--main-font);
 }
 
 /* ----------------------------------------------------- */
@@ -202,8 +210,14 @@ textarea {
 .checkbox {
   position: relative;
   cursor: pointer;
-  opacity: 0.75;
   justify-self: center;
+}
+
+.deactivated-checkbox {
+  position: relative;
+  cursor: default;
+  justify-self: center;
+  opacity: 0.5;
 }
 
 .checkbox-box, .checkbox-check, .change-high, .change-normal, .change-low, .item-ttl-up, .item-ttl-down, .save-icon, .delete-icon, .pencil-icon {
@@ -218,11 +232,16 @@ textarea {
   flex-direction: row;
   justify-content: center;
   align-content: center;
+  opacity: 0.5;
+}
 
+.edit-icon:hover {
+  opacity: 1;
 }
 
 .checkbox-box {
   margin: 0;
+  cursor: inherit;
 }
 
 .checkbox-check {
@@ -230,6 +249,7 @@ textarea {
   position: absolute;
   left: 0;
   opacity: 0;
+  cursor: inherit;
 }
 
 .checked {
@@ -304,10 +324,6 @@ textarea {
   justify-self: center;
   width: 1.5rem;
   height: 1.5rem;
-}
-
-.archive-separator {
-  margin-top: 70vh;
 }
 
 /* ----------------------------------------------------- */
