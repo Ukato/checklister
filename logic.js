@@ -154,9 +154,7 @@ function enterEditMode(activeItem) {
 
   // store values in newly made elements
   li.children[0].value = activeItem.children[0].classList.value;
-  console.log(activeItem.children[0].classList.value);
   li.children[0].children[1].value = activeItem.children[0].children[1].classList.value;
-  console.log(activeItem.children[0].children[1].classList.value);
   li.children[1].value = activeItem.children[1].value;
   li.children[2].children[1].value = activeItem.children[2].value;
   li.children[2].children[1].children[0].value = activeItem.children[2].lastChild.value;
@@ -284,8 +282,6 @@ function saveChanges(item) {
     attributes.checkstate = 'checkbox';
     attributes.checkmarkstate = 'checkbox-check';
   }
-
-  console.log(attributes.checkstate, attributes.checkmarkstate);
 
   li.classList = `${priorityValue} active-item`;
   
@@ -749,11 +745,10 @@ function updateTTLStatus() {
     updateLocalStorage(attributes);
     
   });
-
-  console.log("TTL Updated");
 }
 
-setInterval(updateTTLStatus, 5000);
+// update ttl status every 5 minutes
+setInterval(updateTTLStatus, 300000);
 
 // -------------------------------------------------------------------------------
 // update items attributes in local storage
