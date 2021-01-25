@@ -818,3 +818,83 @@ label:hover {
   max-width: 800px;
   transition: position 1s, height 1s;
 }
+
+/* ----------------------------------------------------------------- */
+/* Media Queries */
+@media screen and (max-width: 1000px) {
+
+  body {
+    height: 100vh;
+    background-color: var(--background-color);
+    display: grid;
+    grid-template: 1fr 1fr / 1fr;
+    grid-template-areas: "header"
+                         "main  ";
+  } 
+
+  header {
+    height: 100%;
+    grid-template: 1fr 1fr / 1fr;
+    grid-template-areas: "left"
+                         "right";
+    align-items: center;
+    grid-area: header;
+  }
+
+  .flex {
+    flex-direction: column;
+  }
+
+  .task-form {
+    height: 100%;
+  }
+
+  .active-item {
+    grid-template: 1fr / 1fr 3fr;
+    font-size: 1.2rem;
+    border-left: 0.25rem solid;
+    transition: position 1s;
+  }
+
+  .ttl-active {
+    display: none;
+  }
+
+  .edit-icon {
+    display: none;
+  }
+
+  #current-date {
+    font-size: 1.2rem;
+  }
+
+  #display-time {
+    display: none;
+  }
+
+  #task-input {
+    min-width: 200px;
+  }
+
+  #input-area {
+    margin-top: 2rem;
+    min-height: 10vh;
+  }
+
+  #active-area, #input-area, #archive-area {
+    padding: 0.5rem 0.8rem;
+  }
+
+  #unfold-select {
+    display: none;
+  }
+
+  #ttl-divider {
+    display: none;
+  }
+
+  #ttlinputgroup {
+    display: none;
+  }
+
+}
