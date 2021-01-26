@@ -688,7 +688,7 @@ function updateTTLStatus() {
           item.children[2].lastChild.innerHTML = `${updatedTime} hours`;
         }
         
-        if(updatedTime <= 4) {
+        if(updatedTime <= 4 && item.children[0].classList.value !== 'deactivated-checkbox') {
           item.children[2].lastChild.style.color = 'var(--high-priority)';
         }
       }
@@ -702,7 +702,7 @@ function updateTTLStatus() {
           item.children[2].lastChild.innerHTML = `${updatedTime} days`;
         }
 
-        if(updatedTime <= 2) {
+        if(updatedTime <= 2 && item.children[0].classList.value !== 'deactivated-checkbox') {
           item.children[2].lastChild.style.color = 'var(--high-priority)';
         }
       }
@@ -716,16 +716,16 @@ function updateTTLStatus() {
           item.children[2].lastChild.innerHTML = `${updatedTime} days`;
         }
 
-        if(updatedTime <= 5) {
+        if(updatedTime <= 5 && item.children[0].classList.value !== 'deactivated-checkbox') {
           item.children[2].lastChild.style.color = 'var(--high-priority)';
         }
       }
 
-      if(itemTTLType === 5 && itemTTL - currentd < 14400000) {
+      if(itemTTLType === 5 && itemTTL - currentd < 14400000 && item.children[0].classList.value !== 'deactivated-checkbox') {
         item.children[2].lastChild.style.color = 'var(--high-priority)';
-      } else if(itemTTLType === 6 && itemTTL - currentd < 86400000) {
+      } else if(itemTTLType === 6 && itemTTL - currentd < 86400000 && item.children[0].classList.value !== 'deactivated-checkbox') {
         item.children[2].lastChild.style.color = 'var(--high-priority)';
-      } else if(itemTTLType === 7 && itemTTL - currentd < 432000000) {
+      } else if(itemTTLType === 7 && itemTTL - currentd < 432000000 && item.children[0].classList.value !== 'deactivated-checkbox') {
         item.children[2].lastChild.style.color = 'var(--high-priority)';
       }
     }
