@@ -648,8 +648,8 @@ function updateTTLStatus() {
 
       // first check to see if the ttl of the item is past, and if so reset it
       if(currentd > itemTTL) {
-        item.children[0].classList = 'checkbox';
-        item.children[0].children[1].classList = 'checkbox-check';
+        item.children[0].classList.value = 'checkbox';
+        item.children[0].children[1].classList.value = 'checkbox-check';
 
         // define new ttl times to reset current items ttl
         let twentyFourHours = currentd + 86400000,
@@ -670,6 +670,25 @@ function updateTTLStatus() {
         };
 
         itemTTL = ttlTimeouts[itemTTLType];
+
+        // reset ttl text as well
+        if(itemTTLType < 5) {
+          item.children[2].firstChild.data = 'Due in';
+        } else {
+          item.children[2].firstChild.data = 'Due by';
+        }
+
+        if(itemTTLType === 2) {
+          item.children[2].lastChild.innerHTML = `24 hours`;
+        }
+
+        if(itemTTLType === 3) {
+          item.children[2].lastChild.innerHTML = `7 days`;
+        }
+
+        if(itemTTLType === 4) {
+          item.children[2].lastChild.innerHTML = `30 days`;
+        }
       } else if(item.children[0].classList.value === 'deactivated-checkbox'){
         if(itemTTLType < 5) {
           item.children[2].firstChild.data = 'Resets in';
