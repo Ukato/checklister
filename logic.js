@@ -643,7 +643,8 @@ function updateTTLStatus() {
     
     // move on to next time if it has no ttl, ie value is 1
     if(itemTTLType !== 1 && item.children[3].classList.contains('edit-icon')) {
-      const currentd = new Date().getTime();
+      let d = new Date();
+      const currentd = d.getTime();
       let itemTTL = item.children[2].lastChild.value;
 
       // first check to see if the ttl of the item is past, and if so reset it
@@ -757,6 +758,7 @@ function updateTTLStatus() {
       due: item.children[2].firstChild.data + ' <br>',
       ttl: item.children[2].lastChild.innerHTML,
       description: item.children[1].value,
+      timer: itemTTL,
       checkstate: item.children[0].classList.value,
       checkmarkstate: item.children[0].children[1].classList.value
     };
@@ -783,6 +785,7 @@ function updateLocalStorage(item) {
     if(item.description === stored.description) {
       stored.due = item.due;
       stored.ttl = item.ttl;
+      stored.timer = item.timer;
       stored.checkstate = item.checkstate;
       stored.checkmarkstate = item.checkmarkstate;
     }
