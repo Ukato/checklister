@@ -437,38 +437,43 @@ function getStoredTasks() {
 
 // Retrieve tasks from local storage and place them in UI
 function getStoredActive() {
+
   let active;
+  
   if(localStorage.getItem('active') === null) {
-    active = [];
+    // default tasks for new user welcome messages
+    active = [{"priority":"medium-p","description":"Add my first task, goal, or to-do to CheckLister","due":"  <br>","ttl":"","index":1,"timer":0,"checkstate":"checkbox","checkmarkstate":"checkbox-check"},{"priority":"medium-p","description":"Use a TTL, or Time To Live, for tasks that reoccur regularly","due":"Due in  <br>","ttl":"24 hours","index":2,"timer":1611867993868,"checkstate":"checkbox","checkmarkstate":"checkbox-check"},{"priority":"high-p","description":"Leave CheckLister open as a tab, or pinned tab, in my browser for easy reference throughout the day","due":" <br>","ttl":"","index":1,"timer":0,"checkstate":"checkbox","checkmarkstate":"checkbox-check"},{"priority":"medium-p","description":"After checking off a few items scroll down to see an archive of my past accomplishments","due":"","ttl":"","index":1,"timer":0,"checkstate":"checkbox","checkmarkstate":"checkbox-check"},{"priority":"low-p","description":"Say hi or send feedback to hello@checklister.io","due":"","ttl":"","index":1,"timer":0,"checkstate":"checkbox","checkmarkstate":"checkbox-check"}];
   } else {
     active = JSON.parse(localStorage.getItem('active'));
-
-    active.forEach(function(item) {
-      const li = document.createElement('li');
-      li.classList = `${item.priority} active-item`;
-  
-      li.innerHTML = `
-        <div class="${item.checkstate}">
-          <img class="checkbox-box" src="img/Shape-Square-100.png" alt="square checkbox">
-          <img class="${item.checkmarkstate}" src="img/Check-100.png" alt="lefthanded checkmark" title="Mark as complete">
-        </div>
-        <p class="item-description">${item.description}</p>
-        <span class="ttl-active">${item.due}<span>${item.ttl}</span></span>
-        <div class="edit-icon">
-          <img class="pencil-icon" src="img/Pencil-100.png" alt="pencil edit icon" title="Edit Goal">
-        </div>
-      `;
-
-      // store values in elements so edit state can use them
-      li.children[0].value = item.checkstate;
-      li.children[1].value = item.description;
-      li.children[2].value = item.index;
-      li.children[2].lastChild.value = item.timer;
-  
-      itemList.appendChild(li);
-  
-    });
   }
+
+  active.forEach(function(item) {
+    const li = document.createElement('li');
+    li.classList = `${item.priority} active-item`;
+
+    li.innerHTML = `
+      <div class="${item.checkstate}">
+        <img class="checkbox-box" src="img/Shape-Square-100.png" alt="square checkbox">
+        <img class="${item.checkmarkstate}" src="img/Check-100.png" alt="lefthanded checkmark" title="Mark as complete">
+      </div>
+      <p class="item-description">${item.description}</p>
+      <span class="ttl-active">${item.due}<span>${item.ttl}</span></span>
+      <div class="edit-icon">
+        <img class="pencil-icon" src="img/Pencil-100.png" alt="pencil edit icon" title="Edit Goal">
+      </div>
+    `;
+
+    // store values in elements so edit state can use them
+    li.children[0].value = item.checkstate;
+    li.children[1].value = item.description;
+    li.children[2].value = item.index;
+    li.children[2].lastChild.value = item.timer;
+
+    itemList.appendChild(li);
+
+  });
+
+  updateTTLStatus();
 }
 
 // Retrieve archived tasks/goals that have been checked off the active list
@@ -776,7 +781,7 @@ setInterval(updateTTLStatus, 300000);
 function updateLocalStorage(item) {
   let active;
   if(localStorage.getItem('active') === null) {
-    active = [];
+    active = [{"priority":"medium-p","description":"Add my first task, goal, or to-do to CheckLister","due":"  <br>","ttl":"","index":1,"timer":0,"checkstate":"checkbox","checkmarkstate":"checkbox-check"},{"priority":"medium-p","description":"Use a TTL, or Time To Live, for tasks that reoccur regularly","due":"Due in  <br>","ttl":"24 hours","index":2,"timer":1611867993868,"checkstate":"checkbox","checkmarkstate":"checkbox-check"},{"priority":"high-p","description":"Leave CheckLister open as a tab, or pinned tab, in my browser for easy reference throughout the day","due":" <br>","ttl":"","index":1,"timer":0,"checkstate":"checkbox","checkmarkstate":"checkbox-check"},{"priority":"medium-p","description":"After checking off a few items scroll down to see an archive of my past accomplishments","due":"","ttl":"","index":1,"timer":0,"checkstate":"checkbox","checkmarkstate":"checkbox-check"},{"priority":"low-p","description":"Say hi or send feedback to hello@checklister.io","due":"","ttl":"","index":1,"timer":0,"checkstate":"checkbox","checkmarkstate":"checkbox-check"}];
   } else {
     active = JSON.parse(localStorage.getItem('active'));
   }
