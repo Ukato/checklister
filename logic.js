@@ -640,12 +640,12 @@ function updateTTLStatus() {
   document.querySelectorAll('.active-item').forEach(function(item) {
     // capture ttl type
     const itemTTLType = item.children[2].value;
+    let itemTTL = item.children[2].lastChild.value;
     
     // move on to next time if it has no ttl, ie value is 1
     if(itemTTLType !== 1 && item.children[3].classList.contains('edit-icon')) {
       let d = new Date();
       const currentd = d.getTime();
-      let itemTTL = item.children[2].lastChild.value;
 
       // first check to see if the ttl of the item is past, and if so reset it
       if(currentd > itemTTL) {
