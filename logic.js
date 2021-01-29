@@ -686,6 +686,7 @@ function updateTTLStatus() {
 
         if(itemTTLType === 2) {
           item.children[2].lastChild.innerHTML = `24 hours`;
+          console.log(`New TTL for 24 hour item set to: ${itemTTL}`);
         }
 
         if(itemTTLType === 3) {
@@ -707,8 +708,11 @@ function updateTTLStatus() {
       // updates for 24 hour ttl
       if(itemTTLType === 2) {
         let updatedTime = Math.trunc((itemTTL - currentd) / 3600000 + 1);
+        console.log(`Updated time for 24 hour TTL: ${updatedTime}`);
         if(updatedTime === 1) {
           item.children[2].lastChild.innerHTML = `less than an hour`;
+        } else if(updatedTime === 25) {
+          item.children[2].lastChild.innerHTML = `24 hours`;
         } else {
           item.children[2].lastChild.innerHTML = `${updatedTime} hours`;
         }
@@ -723,6 +727,8 @@ function updateTTLStatus() {
         let updatedTime = Math.trunc((itemTTL - currentd) / 86400000 + 1);
         if(updatedTime === 0) {
           item.children[2].lastChild.innerHTML = `less than a day`;
+        } else if(updatedTime === 8) {
+          item.children[2].lastChild.innerHTML = `7 days`;
         } else {
           item.children[2].lastChild.innerHTML = `${updatedTime} days`;
         }
@@ -737,6 +743,8 @@ function updateTTLStatus() {
         let updatedTime = Math.trunc((itemTTL - currentd) / 86400000 + 1);
         if(updatedTime === 0) {
           item.children[2].lastChild.innerHTML = `less than a day`;
+        } else if(updatedTime === 31) {
+          item.children[2].lastChild.innerHTML = `30 days`;
         } else {
           item.children[2].lastChild.innerHTML = `${updatedTime} days`;
         }
