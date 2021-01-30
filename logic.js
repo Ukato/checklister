@@ -676,6 +676,7 @@ function updateTTLStatus() {
         };
 
         itemTTL = ttlTimeouts[itemTTLType];
+        item.children[2].lastChild.value = itemTTL;
 
         // reset ttl text as well
         if(itemTTLType < 5) {
