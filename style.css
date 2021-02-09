@@ -10,12 +10,21 @@ Stylesheet for CheckLister
   --background-color: #424242;
   --foreground-color: #c9c9c9;
   --accent-color: #5AB83D;
+  /* --foreground-color: #031D44;
+  --background-color: #e1e0dc;
+  --accent-color: #04395e; */
   --high-priority: rgba(216,60,62,0.75);
   --high-priority-hover: rgb(216,60,62);
   --normal-priority: rgba(202, 202, 202, 0.75);
   --normal-priority-hover: rgb(202, 202, 202);
   --low-priority: rgba(89, 168, 64, 0.75);
   --low-priority-hover: rgb(89, 168, 64);
+  /* --high-priority: rgba(213,137,111,0.75);
+  --high-priority-hover: rgb(213,137,111);
+  --normal-priority: rgba(218, 183, 133, 0.75);
+  --normal-priority-hover: rgb(218, 183, 133);
+  --low-priority: rgba(112, 162, 136, 0.75);
+  --low-priority-hover: rgb(112, 162, 136); */
   --header-font: 'Oxanium', cursive;
   --main-font: 'Roboto Condensed', sans-serif;
   --h1-size: 2.6rem;

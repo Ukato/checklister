@@ -685,18 +685,17 @@ function updateTTLStatus() {
           item.children[2].firstChild.data = 'Due by';
         }
 
+        // reset text color on items past due and haven't been checked off
+        item.children[2].lastChild.style.color = 'var(--foreground-color)';
+
         if(itemTTLType === 2) {
           item.children[2].lastChild.innerHTML = `24 hours`;
-          console.log(`New TTL for 24 hour item set to: ${itemTTL}`);
-        }
-
-        if(itemTTLType === 3) {
+        } else if(itemTTLType === 3) {
           item.children[2].lastChild.innerHTML = `7 days`;
-        }
-
-        if(itemTTLType === 4) {
+        } else if(itemTTLType === 4) {
           item.children[2].lastChild.innerHTML = `30 days`;
         }
+
       } else if(item.children[0].classList.value === 'deactivated-checkbox'){
         if(itemTTLType < 5) {
           item.children[2].firstChild.data = 'Resets in';
