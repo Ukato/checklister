@@ -196,6 +196,7 @@ textarea {
   font-size: 1.2rem;
   border-left: 0.25rem solid;
   transition: position 1s;
+  grid-template-areas: 'checkbox description ttl edit';
 }
 
 .priority-change {
@@ -220,6 +221,11 @@ textarea {
   position: relative;
   cursor: pointer;
   justify-self: center;
+  grid-area: checkbox;
+}
+
+.item-description {
+  grid-area: description;
 }
 
 .deactivated-checkbox {
@@ -242,6 +248,7 @@ textarea {
   justify-content: center;
   align-content: center;
   opacity: 0.5;
+  grid-area: edit;
 }
 
 .edit-icon:hover {
@@ -287,6 +294,7 @@ textarea {
   font-weight: 700;
   text-transform: uppercase;
   text-align: center;
+  grid-area: ttl;
 }
 
 .item-ttl-up, .item-ttl-down {
@@ -832,79 +840,64 @@ label:hover {
 /* Media Queries */
 @media screen and (max-width: 1000px) {
 
-  body {
-    height: 100vh;
-    background-color: var(--background-color);
-    display: grid;
-    grid-template: 1fr 1fr / 1fr;
-    grid-template-areas: "header"
-                         "main  ";
-  } 
-
   header {
     height: 100%;
-    grid-template: 1fr 1fr / 1fr;
-    grid-template-areas: "left"
-                         "right";
-    align-items: center;
-    grid-area: header;
-  }
-
-  .flex {
+    margin-bottom: 2rem;
+    display: flex;
     flex-direction: column;
   }
 
-  .task-form {
-    height: 100%;
-  }
-
-  .active-item {
-    grid-template: 1fr / 1fr 3fr;
-    font-size: 1.2rem;
-    border-left: 0.25rem solid;
-    transition: position 1s;
-  }
-
-  .ttl-active {
-    display: none;
-  }
-
-  .edit-icon {
-    display: none;
-  }
-
   #current-date {
-    font-size: 1.2rem;
+    font-size: 2rem;
   }
 
   #display-time {
     display: none;
   }
 
-  #task-input {
+  #input-area form {
+    flex-direction: column;
+  }
+
+  .input-group {
+    margin: 2rem auto;
+    min-height: 2rem;
+  }
+
+  #ttl {
+    margin: 1rem 0 0 0;
     min-width: 200px;
-    font-size: 1rem;
-  }
-
-  #input-area {
-    margin-top: 2rem;
-    min-height: 10vh;
-  }
-
-  #active-area, #input-area, #archive-area {
-    padding: 0.5rem 0.8rem;
-  }
-
-  #unfold-select {
-    display: none;
+    height: 100%;
+    text-align: center;
+    font-size: 1.4rem;
   }
 
   #ttl-divider {
     display: none;
   }
 
-  #ttlinputgroup {
-    display: none;
+}
+
+@media screen and (max-width: 500px) {
+
+  #site-title {
+    font-size: 2rem;
+  }
+
+  #current-date {
+    font-size: 1.4rem;
+  }
+
+  .item-list {
+    grid-gap: 2rem;
+  }
+  
+  .active-item {
+    padding: 0.6rem 0.2rem;
+    grid-template: auto auto / auto auto auto;
+    grid-template-areas: 'checkbox    description description'
+                         'edit        ttl         ttl';
+    transition: position 1s;
   }
 
 }
