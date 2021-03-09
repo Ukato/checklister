@@ -323,6 +323,7 @@ textarea {
   padding: 0.6rem 0.2rem;
   display: grid;
   grid-template: 1fr / 4fr 1.5fr 0.5fr;
+  grid-template-areas: 'description time flag';
   font-size: 1.2rem;
   border-left: 0.25rem solid var(--foreground-color);
   opacity: 0.75;
@@ -335,12 +336,14 @@ textarea {
 .time-completed {
   justify-self: right;
   text-align: right;
+  grid-area: time;
 }
 
 .completed-flag {
   justify-self: center;
   width: 1.5rem;
   height: 1.5rem;
+  grid-area: flag;
 }
 
 /* ----------------------------------------------------- */
