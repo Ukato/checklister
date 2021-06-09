@@ -734,6 +734,19 @@ textarea {
 
 /* ----------------------------------------------------- */
 /* CSS ID Level Styles */
+
+#light-theme {
+  margin: 0.5rem;
+  padding: 0.2rem;
+
+  width: 2.5rem;
+  height: 2.5rem;
+
+  position: absolute;
+  top: 0;
+  left: 95%;
+}
+
 #current-date, #display-time {
   font-weight: lighter;
 }
@@ -841,7 +854,7 @@ label:hover {
 
 /* ----------------------------------------------------------------- */
 /* Media Queries */
-@media screen and (max-width: 1000px) {
+@media screen and (max-width: 1100px) {
 
   header {
     height: 100%;
@@ -867,6 +880,11 @@ label:hover {
     min-height: 2rem;
   }
 
+  .active-item {
+    grid-template: 1fr / 0.4fr 4fr 1fr 1fr;
+    grid-template-areas: 'checkbox description ttl edit';
+  }
+
   #ttl {
     margin: 1rem 0 0 0;
     min-width: 200px;
@@ -877,6 +895,10 @@ label:hover {
 
   #ttl-divider {
     display: none;
+  }
+
+  #light-theme {
+    left: 90%;
   }
 
 }
@@ -896,11 +918,9 @@ label:hover {
   }
   
   .active-item {
-    padding: 0.6rem 0.2rem;
-    grid-template: auto auto / auto auto auto;
+    grid-template: 1fr / 0.4fr 3.5fr 1.5fr 0.6fr;
     grid-template-areas: 'checkbox    description description'
                          'edit        ttl         ttl';
-    transition: position 1s;
   }
 
 }

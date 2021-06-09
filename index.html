@@ -22,6 +22,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <meta name="description" content="A simple daily checklist tool to keep you on track with your goals.">
   <meta name="keywords" content="daily, checklist, productivity, goals, todo, to-do, checklister">
+  <meta name="robots" content="index, follow">
   <!-- Social Card Data -->
   <meta property="og:site_name" content="CheckLister">
   <meta property="og:type" content="website">
@@ -43,13 +44,15 @@
 <body>
   <!-- Dynamic header to display current day and time -->
   <header>
-    <div class="center m-l">
+    <img src="./img/light-bulb.png" alt="light bulb" id="light-theme">
+    <div class="center flex m-l">
       <h1 id="site-title">CheckLister</h1>
     </div>
     <div class="right flex m-l">
       <h2 id="current-date" class="m-m"></h2>
       <h2 id="display-time" class="m-1">
         <img id="header-clock" src="img/Clock-02-100.png" alt="clock icon" title="click here to display/hide time">
+        
         <span id="current-time" class="initial-time"></span>
       </h2>
     </div>
