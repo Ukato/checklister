@@ -9,7 +9,9 @@ Stylesheet for CheckLister
   --max-width: 1400px;
   --background-color: #424242;
   --foreground-color: #c9c9c9;
+  --foreground-color-hover: #FFFFFF;
   --accent-color: #5AB83D;
+  /* --alt-accent-color: #3d50b8; */
   /* --foreground-color: #031D44;
   --background-color: #e1e0dc;
   --accent-color: #04395e; */
@@ -808,7 +810,7 @@ textarea {
 }
 
 label:hover {
-  color: #FFF;
+  color: var(--foreground-color-hover);
 }
 
 #ttl {

@@ -18,6 +18,8 @@ const addArrow = document.querySelector('#add-arrow');
 const itemList = document.querySelector('#active-tasks');
 const archive = document.querySelector('#archive');
 
+const lightbulb = document.querySelector('#light-theme');
+
 // load all Event Listeners
 loadEventListeners();
 
@@ -26,6 +28,8 @@ function loadEventListeners() {
   document.addEventListener('DOMContentLoaded', getStoredTasks);
   // Show/Hide Time
   clockIcon.addEventListener('click', timeDisplay);
+  // Change color theme
+  lightbulb.addEventListener('click', changeColors);
   // react to user input at task input
   taskInput.addEventListener('focus', showTaskInput);
   taskInput.addEventListener('blur', hideTaskInput);
@@ -77,52 +81,51 @@ function loadEventListeners() {
         flushLocalStorage(event.target.parentElement.nextElementSibling.innerHTML);
       }
       
-    }
+    };
 
     // listen for user to click the edit icon
     if(event.target.classList.contains('pencil-icon')) {
       enterEditMode(event.target.parentElement.parentElement);
       flushLocalStorage(event.target.parentElement.parentElement.children[1].value);
-    }
+    };
 
     // listen for the user to click the delete icon
     if(event.target.classList.contains('delete-icon')) {
       // remove item from local storage
       flushLocalStorage(event.target.parentElement.parentElement.children[1].value);
       event.target.parentElement.parentElement.remove();
-    }
+    };
 
     // listen for the user to click the save icon
     if(event.target.classList.contains('save-icon')) {
       saveChanges(event.target.parentElement.parentElement);
-    }
+    };
 
     // listen for user to change priority to high
     if(event.target.classList.contains('change-high')) {
       event.target.parentElement.parentElement.classList = 'high-p active-item';
-    }
+    };
 
     // listen for user to change priority to normal
     if(event.target.classList.contains('change-normal')) {
       event.target.parentElement.parentElement.classList = 'medium-p active-item';
-    }
+    };
 
     // listen for user to change priority to low
     if(event.target.classList.contains('change-low')) {
       event.target.parentElement.parentElement.classList = 'low-p active-item';
-    }
+    };
 
     // listen for user to click ttl up arrow
     if(event.target.classList.contains('item-ttl-up')) {
       setItemTTL(-1, event.target.parentElement.children[1])
-    }
+    };
 
     // listen for user to click ttl down arrow
     if(event.target.classList.contains('item-ttl-down')) {
       setItemTTL(1, event.target.parentElement.children[1])
-    }
-  });
-  
+    };
+  });  
 }
 
 // Allow user to edit an active item
@@ -893,6 +896,19 @@ function timeDisplay() {
   } else {
     hideTime();
   }
+}
+
+// Function to change the color scheme of the app
+function changeColors() {
+  const root = document.querySelector(':root');
+  let rootStyle = getComputedStyle(root);
+
+  console.log(rootStyle.getPropertyValue('--accent-color'));
+
+  root.style.setProperty('--accent-color', '#3d50b8');
+  root.style.setProperty('--background-color', '#fff');
+  root.style.setProperty('--foreground-color-hover', '#000');
+  root.style.setProperty('--foreground-color', '#424242');
 }
 
 function revealTime() {
